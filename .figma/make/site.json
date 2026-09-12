@@ -1,0 +1,10 @@
+{
+  "description": "Generate creative challenges and complete them using an interactive drawing canvas, enabling users to engage in fun, seamless artistic workflows.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
