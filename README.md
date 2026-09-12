@@ -411,29 +411,30 @@ The deployed application uses a model-agnostic server-side state extraction laye
 
 Current production candidate:
 
-Gemini 3.5 Flash-Lite
-
-because the task is short structured classification and the model is optimized for low-latency, high-throughput execution.
+Gemini 3.5 Flash-Lite is currently used through a Supabase Edge Function for structured state extraction.
 
 ### Architecture
 
 ```text
-React / Vite frontend
-        |
-        v
+React / Vite
+      ↓
 Supabase Edge Function
-        |
-        v
-Gemini structured state extraction
-        |
-        v
+      ↓
+Gemini 3.5 Flash-Lite
+      ↓
+Structured state
+      ↓
 Scene Engine
-        |
-        v
-Adaptive intervention policy
-        |
-        v
-Better / Same / Worse feedback
+      ↓
+Personalized mode selection
+      ↓
+Micro-break
+      ↓
+Better / Same / Worse
+      ↓
+Supabase Postgres
+      ↓
+Future personalization
 ```
 
 The Gemini API key stays server-side and is never exposed through a VITE_* environment variable.
@@ -543,38 +544,48 @@ adaptive-breaks/
 
 ### Completed
 
-- React micro-break prototype
+- React/Vite micro-break application
 - creative/timed intervention library
-- mock Scene Engine
-- intervention-mode mapping
-- Better / Same / Worse feedback logic
-- local personalization logic
-- safety diversion route
+- deterministic Scene Engine
+- ACTIVATE / DOWNSHIFT / REFOCUS / DETACH mode mapping
+- real Gemini 3.5 Flash-Lite structured state extraction
+- Supabase Edge Function for server-side Gemini access
+- Gemini API key kept server-side
+- English, Roman Urdu, and code-mixed input support
+- high-risk language safety diversion
+- user correction controls on detected state
+- Better / Same / Worse feedback flow
+- local personalization fallback
+- Supabase Postgres feedback persistence
+- pseudonymous browser-level user IDs
+- previous outcome history loaded for future recommendations
+- mode-level reward-based personalization
 - 80 manually curated seed examples
 - 240 generated paraphrase candidates
-- structured QA pass
-- leakage-safe dataset pipeline
-- Kaggle training pipeline
-- Rules benchmark
+- automated structured dataset review
+- leakage-safe seed-group splitting
+- reproducible Kaggle experiment pipeline
+- Rules baseline
 - TF-IDF + Logistic Regression benchmark
 - multilingual-E5 + Logistic Regression benchmark
 - TF-IDF primary-state Macro-F1: 0.8464
+- production build verified successfully
 
 ### In progress
 
 - final project-team dataset review
-- real Gemini state extraction
-- Supabase persistence
+- UI/demo polish
+- clearer adaptation visualization for the final demo
+- review of confidence/correction UX
 
 ### Next
 
-- connect Gemini through a Supabase Edge Function;
-- replace mock state extraction with the real API;
-- connect Scene Result -> intervention -> feedback end to end;
-- store anonymous outcome history in Supabase;
-- add My Scene adaptation dashboard if time allows;
-- publish the reviewed dataset to Hugging Face;
-- deploy frontend to Vercel.
+- improve demo visibility of personalization
+- optionally persist user state corrections
+- optionally extend personalization from mode-level to individual break/activity preference
+- deploy the frontend to Vercel
+- publish the final reviewed dataset to Hugging Face
+- prepare final presentation and demo video
 
 ## Safety and scope
 
