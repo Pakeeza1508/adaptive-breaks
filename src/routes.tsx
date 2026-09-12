@@ -868,7 +868,11 @@ function Home() {
             <div className="scene-character-art">
               <div className="scene-orbit orbit-a" />
               <div className="scene-orbit orbit-b" />
-              <Companion mood="drained" />
+              <img
+                src="/assets/mascots/kya-scene-drained.png"
+                alt="Drained Kya Scene Hai mascot"
+                className="scene-mascot-img"
+              />
             </div>
             <div className="scene-character-copy">
               <span>“dimagh bilkul band hai.”</span>
@@ -881,7 +885,11 @@ function Home() {
             <div className="scene-character-art">
               <div className="scene-orbit orbit-a" />
               <div className="scene-orbit orbit-b" />
-              <Companion mood="overwhelmed" />
+              <img
+                src="/assets/mascots/kya-scene-overwhelmed.png"
+                alt="Overwhelmed Kya Scene Hai mascot"
+                className="scene-mascot-img"
+              />
             </div>
             <div className="scene-character-copy">
               <span>“kal exam hai aur sab pending hai.”</span>
@@ -894,7 +902,11 @@ function Home() {
             <div className="scene-character-art">
               <div className="scene-orbit orbit-a" />
               <div className="scene-orbit orbit-b" />
-              <Companion mood="distracted" />
+              <img
+                src="/assets/mascots/kya-scene-distracted.png"
+                alt="Distracted Kya Scene Hai mascot"
+                className="scene-mascot-img"
+              />
             </div>
             <div className="scene-character-copy">
               <span>“focus nai ho raha.”</span>
@@ -907,7 +919,11 @@ function Home() {
             <div className="scene-character-art">
               <div className="scene-orbit orbit-a" />
               <div className="scene-orbit orbit-b" />
-              <Companion mood="stuck" />
+              <img
+                src="/assets/mascots/kya-scene-stuck.png"
+                alt="Stuck Kya Scene Hai mascot"
+                className="scene-mascot-img"
+              />
             </div>
             <div className="scene-character-copy">
               <span>“same bug 40 mins se...”</span>
