@@ -6,6 +6,23 @@ import {
   useSearchParams,
 } from "react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  analyzeSceneMock,
+  chooseBreakMode,
+  modeLabels,
+  overrideScene,
+  sceneLabels,
+  sceneMessages,
+  type BreakMode,
+  type PrimaryState,
+  type SceneState,
+} from "./engine/sceneEngine";
+
+import {
+  getModeBonuses,
+  recordOutcome,
+  type FeedbackOutcome,
+} from "./engine/personalization";
 
 type Constraint =
   | "none"
@@ -256,6 +273,111 @@ const challenges: Challenge[] = [
     ["wake"],
   ),
 ];
+
+const challengeModes: Record<
+  string,
+  BreakMode[]
+> = {
+  "THREE-CIRCLE FACE": ["refocus"],
+  "ONE DOT, GO": ["refocus", "activate"],
+  "RIDICULOUS HAT": ["detach"],
+  "SMALLEST MONSTER": ["activate"],
+  "THREE LINES": ["refocus"],
+  "ANNOYED CIRCLE": ["detach"],
+
+  "FIVE-LINE CAT": [
+    "refocus",
+    "activate",
+  ],
+
+  "ONE-LINE CHAOS": ["refocus"],
+
+  "UGLY FLOWER CLUB": ["detach"],
+  "SUSPICIOUS CLOUD": ["detach"],
+
+  "BLOB BUDDY": [
+    "detach",
+    "activate",
+  ],
+
+  "SLOW LINES": ["downshift"],
+
+  "CIRCLE WEATHER": [
+    "downshift",
+    "refocus",
+  ],
+
+  "WAVE MACHINE": ["downshift"],
+
+  "FISH SHOES": ["detach"],
+  "MONDAY FLAG": ["detach"],
+  "EMPLOYABLE MONSTER": ["detach"],
+  "POTATO CELEBRITY": ["detach"],
+
+  "MYSTERY SQUIGGLE": [
+    "detach",
+    "refocus",
+  ],
+
+  "TINY ROOM": ["detach"],
+  "GEO SCENE": ["detach"],
+  "TINY DRAGON": ["detach"],
+  "BAD INVENTOR": ["detach"],
+  "SHAPE DAY": ["detach"],
+  "TWO-CM HOUSE": ["detach"],
+  "SILLY SUN": ["detach"],
+
+  "NON-DOMINANT HERO": ["activate"],
+};
+
+function pickAdaptiveChallenge(
+  mode: BreakMode,
+  availableTime: number,
+) {
+  let pool = challenges.filter(
+    (challenge) =>
+      challenge.duration <= availableTime &&
+      challengeModes[challenge.title]?.includes(
+        mode,
+      ),
+  );
+
+  // Temporary MVP fallback.
+  // Later every mode will have dedicated
+  // 20 sec / 1 min / 3 min activities.
+  if (!pool.length) {
+    pool = challenges.filter(
+      (challenge) =>
+        challenge.duration <= availableTime,
+    );
+  }
+
+  if (!pool.length) {
+    pool = challenges;
+  }
+
+  const fresh = pool.filter(
+    (challenge) =>
+      !recent.includes(challenge.title),
+  );
+
+  const finalPool =
+    fresh.length > 0 ? fresh : pool;
+
+  const selected =
+    finalPool[
+      Math.floor(Math.random() * finalPool.length)
+    ];
+
+  recent.push(selected.title);
+
+  if (recent.length > 3) {
+    recent.shift();
+  }
+
+  return selected;
+}
+
 const recent: string[] = [];
 function pick(input = "", vibe = "surprise", time?: number) {
   const words = input.toLowerCase();
@@ -329,7 +451,7 @@ function Nav() {
   return (
     <nav>
       <Link to="/" className="brand">
-        blink<span>!</span>
+        kya scene hai<span>?</span>
       </Link>
       <div>
         <Link to="/things">Tiny Things</Link>
@@ -347,138 +469,441 @@ function Doodle({
 }) {
   return <span className={`doodle ${className}`}>{children}</span>;
 }
+
 function Home() {
   const navigate = useNavigate();
+
   const [text, setText] = useState("");
-  const [placeholder, setPlaceholder] = useState("my brain is fried");
-  const [mood, setMood] = useState("idle");
-  const [look, setLook] = useState({ x: 0, y: 0 });
-  const [shuffling, setShuffling] = useState(false);
-  const [shuffleTitle, setShuffleTitle] = useState("");
+  const [availableTime, setAvailableTime] =
+    useState(60);
+
+  const [placeholder, setPlaceholder] =
+    useState("I'm cooked");
+
+  const [mood, setMood] =
+    useState("idle");
+
+  const [look, setLook] = useState({
+    x: 0,
+    y: 0,
+  });
+
   const examples = [
+    "I'm cooked",
+    "kal exam hai 💀",
+    "focus nai ho raha",
+    "dimagh band hogaya",
+    "same bug 40 mins se dekh raha hun",
+    "assignment nahi ho rahi",
     "my brain is fried",
-    "I'm bored",
-    "I need something silly",
-    "I can't focus",
-    "I have 30 seconds",
-    "give me something weird",
   ];
+
   useEffect(() => {
-    const t = setInterval(
-      () =>
-        setPlaceholder(examples[Math.floor(Math.random() * examples.length)]),
-      2400,
-    );
-    return () => clearInterval(t);
+    const timer = setInterval(() => {
+      setPlaceholder(
+        examples[
+          Math.floor(
+            Math.random() * examples.length,
+          )
+        ],
+      );
+    }, 2400);
+
+    return () => clearInterval(timer);
   }, []);
-  const go = (c: Challenge, message?: string) =>
-    navigate(`/play?c=${encodeURIComponent(JSON.stringify(c))}`, {
-      state: { message },
-    });
-  const gen = () => {
+
+  const readScene = () => {
     if (!text.trim()) return;
-    if (safety(text)) {
-      navigate("/support");
-      return;
-    }
-    const c = pick(text);
-    const message = /fried|tired|don't want/i.test(text)
-      ? "Okay. No thinking required."
-      : /silly|stupid|bored/i.test(text)
-        ? "You need something stupid. Got it."
-        : /chaos/i.test(text)
-          ? "Tiny chaos? Excellent choice."
-          : "Let's get your brain out of work mode.";
-    go(c, message);
+
+    navigate("/scene", {
+      state: {
+        text: text.trim(),
+        availableTime,
+      },
+    });
   };
-  const surprise = () => {
-    const final = pick();
-    setShuffling(true);
-    setMood("excited");
-    let tick = 0;
-    const reel = setInterval(() => {
-      setShuffleTitle(challenges[(tick++ * 5 + 2) % challenges.length].title);
-    }, 105);
-    setTimeout(() => {
-      clearInterval(reel);
-      setShuffleTitle(final.title);
-      setTimeout(() => go(final), 150);
-    }, 700);
-  };
+
   return (
     <main
       className="home"
-      onPointerMove={(e) =>
+      onPointerMove={(event) =>
         setLook({
-          x: Math.max(-4, Math.min(4, (e.clientX - innerWidth * 0.73) / 90)),
-          y: Math.max(-3, Math.min(3, (e.clientY - innerHeight * 0.38) / 90)),
+          x: Math.max(
+            -4,
+            Math.min(
+              4,
+              (event.clientX -
+                innerWidth * 0.73) /
+                90,
+            ),
+          ),
+          y: Math.max(
+            -3,
+            Math.min(
+              3,
+              (event.clientY -
+                innerHeight * 0.38) /
+                90,
+            ),
+          ),
         })
       }
     >
       <Nav />
-      <Doodle className="squiggle">〰</Doodle>
-      <Doodle className="star">✦</Doodle>
+
+      <Doodle className="squiggle">
+        〰
+      </Doodle>
+
+      <Doodle className="star">
+        ✦
+      </Doodle>
+
       <div className="hero-copy">
-        <p className="eyebrow">A healthier answer to “I need a break.”</p>
+        <p className="eyebrow">
+          YOUR BREAK SHOULD KNOW THE SCENE.
+        </p>
+
         <h1>
-          Your brain deserves
-          <br />a tiny break.
+          Dimagh ka kya
+          <br />
+          scene hai?
         </h1>
-        <p className="intro">Don't scroll. Make something tiny instead.</p>
-        <div className="actions">
-          <button
-            className="primary"
-            onMouseEnter={() => setMood("excited")}
-            onMouseLeave={() => setMood("idle")}
-            onClick={() => navigate("/vibes")}
-          >
-            MAKE SOMETHING <b>→</b>
-          </button>
-          <button
-            className={`secondary ${shuffling ? "shuffle" : ""}`}
-            onMouseEnter={() => setMood("curious")}
-            onMouseLeave={() => setMood("idle")}
-            onClick={surprise}
-          >
-            SURPRISE ME <span>✦</span>
-          </button>
-          {shuffling && <span className="surprise-reel">{shuffleTitle}</span>}
-        </div>
+
+        <p className="intro">
+          Don't scroll through it.
+          <br />
+          Tell us the scene. We'll switch it.
+        </p>
+
         <div className="brain-input">
           <input
             value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && gen()}
+            onChange={(event) =>
+              setText(event.target.value)
+            }
+            onFocus={() =>
+              setMood("curious")
+            }
+            onBlur={() =>
+              setMood("idle")
+            }
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                readScene();
+              }
+            }}
             placeholder={placeholder}
-            aria-label="Tell us what your brain needs"
+            aria-label="Dimagh ka kya scene hai?"
           />
-          <button onClick={gen} aria-label="Generate a challenge">
+
+          <button
+            onClick={readScene}
+            aria-label="Read my scene"
+          >
             →
           </button>
         </div>
+
         <div className="time">
           <span>I have...</span>
-          {[20, 60, 180].map((t) => (
-            <button key={t} onClick={() => go(pick("", "surprise", t))}>
-              {t === 60 ? "1 min" : t === 180 ? "3 min" : "20 sec"}
+
+          {[20, 60, 180].map((time) => (
+            <button
+              key={time}
+              className={
+                availableTime === time
+                  ? "selected"
+                  : ""
+              }
+              onClick={() =>
+                setAvailableTime(time)
+              }
+            >
+              {time === 20
+                ? "20 sec"
+                : time === 60
+                  ? "1 min"
+                  : "3 min"}
             </button>
           ))}
         </div>
-        <div className="world-invite">
-          <span>Not feeling creative?</span>
-          <Link to="/worlds">TAKE ME SOMEWHERE →</Link>
-        </div>
+
+        <button
+          className="primary scene-read-button"
+          onClick={readScene}
+          disabled={!text.trim()}
+          onMouseEnter={() =>
+            setMood("excited")
+          }
+          onMouseLeave={() =>
+            setMood("idle")
+          }
+        >
+          READ MY SCENE <b>→</b>
+        </button>
       </div>
+
       <div className="hero-art">
         <div className="halo" />
-        <Companion mood={mood} x={look.x} y={look.y} />
-        <p className="bubble">talent optional</p>
-        <Doodle className="scribble">✎</Doodle>
+
+        <Companion
+          mood={mood}
+          x={look.x}
+          y={look.y}
+        />
+
+        <p className="bubble">
+          scene kya hai?
+        </p>
+
+        <Doodle className="scribble">
+          ✎
+        </Doodle>
       </div>
-      <p className="no-pressure">No likes. No pressure. No point. Just play.</p>
+
+      <p className="no-pressure">
+        No feed. No pressure. Bas ek reset.
+      </p>
     </main>
   );
 }
+
+type SceneRouteState = {
+  text: string;
+  availableTime: number;
+};
+
+type BreakSession = {
+  input: string;
+  availableTime: number;
+  scene: SceneState;
+  mode: BreakMode;
+  startedAt: number;
+};
+
+function SceneResult() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const routeState =
+    location.state as SceneRouteState | null;
+
+  const input =
+    routeState?.text ?? "";
+
+  const availableTime =
+    routeState?.availableTime ?? 60;
+
+  const [scene, setScene] =
+    useState<SceneState>(() =>
+      analyzeSceneMock(input),
+    );
+
+  useEffect(() => {
+    if (!input) {
+      navigate("/", {
+        replace: true,
+      });
+    }
+  }, [input, navigate]);
+
+  useEffect(() => {
+    if (scene.safety === "elevated") {
+      navigate("/support", {
+        replace: true,
+      });
+    }
+  }, [scene, navigate]);
+
+  const personalization =
+    getModeBonuses(scene);
+
+  const mode = chooseBreakMode(
+    scene,
+    personalization,
+  );
+
+  const challenge = useMemo(
+    () =>
+      pickAdaptiveChallenge(
+        mode,
+        availableTime,
+      ),
+    [
+      mode,
+      availableTime,
+      scene.primaryState,
+    ],
+  );
+
+  const startBreak = () => {
+    const session: BreakSession = {
+      input,
+      availableTime,
+      scene,
+      mode,
+      startedAt: Date.now(),
+    };
+
+    navigate(
+      `/play?c=${encodeURIComponent(
+        JSON.stringify(challenge),
+      )}`,
+      {
+        state: {
+          message: sceneMessages[mode],
+          session,
+        },
+      },
+    );
+  };
+
+  const corrections: {
+    state: PrimaryState;
+    label: string;
+  }[] = [
+    {
+      state: "drained",
+      label: "Drained",
+    },
+    {
+      state: "overwhelmed",
+      label: "Overwhelmed",
+    },
+    {
+      state: "distracted",
+      label: "Distracted",
+    },
+    {
+      state: "stuck",
+      label: "Stuck",
+    },
+  ];
+
+  return (
+    <main className="page scene-result">
+      <Nav />
+
+      <button
+        className="back"
+        onClick={() => navigate(-1)}
+      >
+        ← Back
+      </button>
+
+      <section className="scene-result-inner">
+        <p className="eyebrow">
+          SCENE ENGINE // ANALYSIS COMPLETE
+        </p>
+
+        <h1>
+          Scene samajh
+          <br />
+          aa gaya.
+        </h1>
+
+        <p className="scene-original-input">
+          “{input}”
+        </p>
+
+        <div className="scene-state-card">
+          <span>CURRENT SCENE</span>
+
+          <strong>
+            {
+              sceneLabels[
+                scene.primaryState
+              ]
+            }
+          </strong>
+
+          <small>
+            {Math.round(
+              scene.confidence * 100,
+            )}
+            % confidence
+          </small>
+        </div>
+
+        <div className="scene-meters">
+          <div>
+            <span>ENERGY</span>
+            <strong>
+              {scene.energy.toUpperCase()}
+            </strong>
+          </div>
+
+          <div>
+            <span>TENSION</span>
+            <strong>
+              {scene.tension.toUpperCase()}
+            </strong>
+          </div>
+
+          <div>
+            <span>ATTENTION</span>
+            <strong>
+              {scene.attention.toUpperCase()}
+            </strong>
+          </div>
+        </div>
+
+        <div className="scene-prescription">
+          <p>RECOMMENDED SHIFT</p>
+
+          <h2>
+            {modeLabels[mode]}
+          </h2>
+
+          <p>
+            {sceneMessages[mode]}
+          </p>
+
+          <span>
+            {challenge.duration} SEC ·{" "}
+            {challenge.title}
+          </span>
+
+          <button
+            className="primary"
+            onClick={startBreak}
+          >
+            SHIFT MY SCENE →
+          </button>
+        </div>
+
+        <div className="scene-correction">
+          <p>Not quite?</p>
+
+          <div>
+            {corrections.map(
+              ({ state, label }) => (
+                <button
+                  key={state}
+                  className={
+                    scene.primaryState ===
+                    state
+                      ? "selected"
+                      : ""
+                  }
+                  onClick={() =>
+                    setScene(
+                      overrideScene(state),
+                    )
+                  }
+                >
+                  {label}
+                </button>
+              ),
+            )}
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 function Vibes() {
   const navigate = useNavigate();
   const cards = [
@@ -974,7 +1399,10 @@ function Play() {
   const [nearDot, setNearDot] = useState(false);
   useEffect(() => {
     if (ignore || seconds === 0) return;
-    const t = setTimeout(() => setSeconds((s) => s - 1), 1000);
+    const t = setTimeout(
+      () => setSeconds((secondsRemaining: number) => secondsRemaining - 1),
+      1000,
+    );
     return () => clearTimeout(t);
   }, [seconds, ignore]);
   const mood =
@@ -1023,9 +1451,18 @@ function Play() {
         onNearDot={setNearDot}
         onMood={setReaction}
         onFinish={(img) =>
-          navigate(`/finish?c=${encodeURIComponent(JSON.stringify(c))}`, {
-            state: { img },
-          })
+          navigate(
+            `/finish?c=${encodeURIComponent(
+              JSON.stringify(c),
+            )}`,
+            {
+              state: {
+                img,
+                session:
+                  location.state?.session,
+              },
+            },
+          )
         }
       />
     </main>
@@ -1040,6 +1477,26 @@ function Finish() {
     [params],
   );
   const img = (location.state as { img?: string } | null)?.img || "";
+  const session = (
+    location.state as {
+      img?: string;
+      session?: BreakSession;
+    } | null
+  )?.session;
+  const [feedback, setFeedback] =
+    useState<FeedbackOutcome | null>(null);
+
+  const submitFeedback = (outcome: FeedbackOutcome) => {
+    if (session) {
+      recordOutcome(
+        session.scene,
+        session.mode,
+        outcome,
+      );
+    }
+
+    setFeedback(outcome);
+  };
   const [phase, setPhase] = useState<"choice" | "dissolve" | "gone">("choice");
   const completed = Number(sessionStorage.getItem("blink-completed") || "0");
   const nextCount = completed + 1;
@@ -1071,6 +1528,68 @@ function Finish() {
     navigate("/things");
   };
   const exitPrompt = nextCount >= 3;
+
+  if (session && feedback === null) {
+    return (
+      <main className="finish-page">
+        <Nav />
+
+        <section className="scene-feedback">
+          <Companion mood="curious" />
+
+          <p className="eyebrow">
+            FEEDBACK // 01
+          </p>
+
+          <h1>
+            Ab scene
+            <br />
+            kaisa hai?
+          </h1>
+
+          <p>
+            One tap. That's how the system
+            learns your resets.
+          </p>
+
+          <div className="feedback-options">
+            <button
+              onClick={() =>
+                submitFeedback("better")
+              }
+            >
+              <span>🙂</span>
+              BETTER
+            </button>
+
+            <button
+              onClick={() =>
+                submitFeedback("same")
+              }
+            >
+              <span>😐</span>
+              SAME
+            </button>
+
+            <button
+              onClick={() =>
+                submitFeedback("worse")
+              }
+            >
+              <span>🙁</span>
+              WORSE
+            </button>
+          </div>
+
+          <small>
+            This changes what Kya Scene Hai?
+            tries next time.
+          </small>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className={`finish-page phase-${phase}`}>
       <Nav />
@@ -1453,13 +1972,14 @@ function Support() {
         someone you trust who can be with you.
       </p>
       <Link to="/" className="text-btn">
-        Back to Blink
+        Back to Kya Scene Hai?
       </Link>
     </main>
   );
 }
 export const router = createBrowserRouter([
   { path: "/", Component: Home },
+  { path: "/scene", Component: SceneResult },
   { path: "/vibes", Component: Vibes },
   { path: "/play", Component: Play },
   { path: "/finish", Component: Finish },

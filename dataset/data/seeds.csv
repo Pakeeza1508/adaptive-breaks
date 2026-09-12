@@ -1,0 +1,81 @@
+seed_id,text,language_style,energy,tension,attention,primary_state,source
+drained_001,I've been studying for hours and my brain is completely drained.,english,low,medium,okay,drained,human_seed
+drained_002,I feel mentally flat after this assignment.,english,low,low,okay,drained,human_seed
+drained_003,My energy is gone and I need a tiny reset.,english,low,low,okay,drained,human_seed
+drained_004,I can still work but my brain feels tired.,english,low,low,okay,drained,human_seed
+drained_005,I'm cooked after three hours of revision.,english,low,medium,okay,drained,human_seed
+drained_006,I feel sleepy and nothing feels interesting right now.,english,low,low,okay,drained,human_seed
+drained_007,My brain is fried but I'm not really stressed.,english,low,low,okay,drained,human_seed
+drained_008,I just need something to wake me up a little.,english,low,low,okay,drained,human_seed
+drained_009,dimagh bilkul thak gaya hai,roman_urdu,low,low,okay,drained,human_seed
+drained_010,bohat der se parh rahi hun ab energy nai hai,roman_urdu,low,medium,okay,drained,human_seed
+drained_011,aaj dimagh kaam hi nai kar raha,roman_urdu,low,low,okay,drained,human_seed
+drained_012,thak gayi hun bas chota sa break chahiye,roman_urdu,low,low,okay,drained,human_seed
+drained_013,parh parh ke brain dead feel ho raha hai,code_mixed,low,medium,okay,drained,human_seed
+drained_014,assignment ne sari energy kha li,roman_urdu,low,medium,okay,drained,human_seed
+drained_015,"I'm literally cooked, aur abhi aur parhna hai",code_mixed,low,medium,okay,drained,human_seed
+drained_016,dimagh fried hai but panic wala scene nai,code_mixed,low,low,okay,drained,human_seed
+drained_017,"energy zero hai, focus abhi theek tha",code_mixed,low,low,okay,drained,human_seed
+drained_018,bas thori battery recharge karni hai dimagh ki,roman_urdu,low,low,okay,drained,human_seed
+drained_019,"I need a break, mera brain slow ho gaya hai",code_mixed,low,low,okay,drained,human_seed
+drained_020,lecture ke baad bilkul drained feel ho raha hai,code_mixed,low,low,okay,drained,human_seed
+overwhelmed_001,I have an exam tomorrow and I'm panicking.,english,normal,high,scattered,overwhelmed,human_seed
+overwhelmed_002,There is too much to finish and I don't know where to start.,english,normal,high,scattered,overwhelmed,human_seed
+overwhelmed_003,This deadline is making everything feel too much.,english,normal,high,scattered,overwhelmed,human_seed
+overwhelmed_004,I have five things due and my brain is overloaded.,english,normal,high,scattered,overwhelmed,human_seed
+overwhelmed_005,I feel tense every time I look at my notes.,english,normal,high,okay,overwhelmed,human_seed
+overwhelmed_006,I cannot calm down enough to start studying.,english,high,high,scattered,overwhelmed,human_seed
+overwhelmed_007,Everything feels urgent right now.,english,high,high,scattered,overwhelmed,human_seed
+overwhelmed_008,The workload is getting overwhelming.,english,normal,high,okay,overwhelmed,human_seed
+overwhelmed_009,kal exam hai aur kuch tayar nai hai,roman_urdu,normal,high,scattered,overwhelmed,human_seed
+overwhelmed_010,bohat tension ho rahi hai samajh nai aa raha kahan se start karun,roman_urdu,normal,high,scattered,overwhelmed,human_seed
+overwhelmed_011,itna sara kaam pending hai dimagh ghoom raha hai,roman_urdu,normal,high,scattered,overwhelmed,human_seed
+overwhelmed_012,deadline sar pe hai aur panic ho raha hai,code_mixed,normal,high,scattered,overwhelmed,human_seed
+overwhelmed_013,"I have too much load yaar, kuch process nai ho raha",code_mixed,normal,high,scattered,overwhelmed,human_seed
+overwhelmed_014,exam kal hai and I'm lowkey panicking,code_mixed,normal,high,scattered,overwhelmed,human_seed
+overwhelmed_015,har cheez urgent lag rahi hai,roman_urdu,high,high,scattered,overwhelmed,human_seed
+overwhelmed_016,bohat pressure hai aur focus toot raha hai,roman_urdu,normal,high,scattered,overwhelmed,human_seed
+overwhelmed_017,mera brain overload ho gaya hai honestly,code_mixed,normal,high,okay,overwhelmed,human_seed
+overwhelmed_018,"I can't even start, itna stress ho raha hai",code_mixed,normal,high,scattered,overwhelmed,human_seed
+overwhelmed_019,notes dekh ke aur tension barh rahi hai,roman_urdu,normal,high,okay,overwhelmed,human_seed
+overwhelmed_020,presentation bhi hai assignment bhi hai scene bohat off hai,code_mixed,normal,high,scattered,overwhelmed,human_seed
+distracted_001,I keep switching tabs and can't stay on one thing.,english,normal,medium,scattered,distracted,human_seed
+distracted_002,I read one line and then my mind goes somewhere else.,english,normal,low,scattered,distracted,human_seed
+distracted_003,I cannot focus on a single paragraph.,english,normal,medium,scattered,distracted,human_seed
+distracted_004,My attention is jumping everywhere today.,english,high,medium,scattered,distracted,human_seed
+distracted_005,I keep checking random things instead of studying.,english,normal,low,scattered,distracted,human_seed
+distracted_006,I am restless and cannot settle into the task.,english,high,medium,scattered,distracted,human_seed
+distracted_007,I start a question and immediately want to do something else.,english,normal,low,scattered,distracted,human_seed
+distracted_008,My mind keeps wandering while I read.,english,normal,low,scattered,distracted,human_seed
+distracted_009,focus bilkul nai ho raha,roman_urdu,normal,medium,scattered,distracted,human_seed
+distracted_010,aik page pe dimagh tik hi nai raha,roman_urdu,normal,low,scattered,distracted,human_seed
+distracted_011,bar bar phone check kar rahi hun bina wajah,roman_urdu,normal,low,scattered,distracted,human_seed
+distracted_012,parhne bethun to dimagh idhar udhar chala jata hai,roman_urdu,normal,low,scattered,distracted,human_seed
+distracted_013,"I keep tab hopping, focus ka scene kharab hai",code_mixed,normal,medium,scattered,distracted,human_seed
+distracted_014,ek cheez pe lock in nai ho pa raha,code_mixed,normal,medium,scattered,distracted,human_seed
+distracted_015,mind wandering full on hai aaj,code_mixed,normal,low,scattered,distracted,human_seed
+distracted_016,parhna hai but attention har jagah ja rahi hai,code_mixed,normal,medium,scattered,distracted,human_seed
+distracted_017,"restless feel ho raha hai, kaam pe beth nai pa raha",roman_urdu,high,medium,scattered,distracted,human_seed
+distracted_018,I literally read the same line because attention keeps leaving,english,normal,medium,scattered,distracted,human_seed
+distracted_019,"focus nahi ban raha, bas cheezain switch kar rahi hun",code_mixed,normal,medium,scattered,distracted,human_seed
+distracted_020,dimagh aik jagah ruk hi nahi raha,roman_urdu,high,medium,scattered,distracted,human_seed
+stuck_001,I've been staring at the same bug for forty minutes.,english,normal,medium,stuck,stuck,human_seed
+stuck_002,I keep trying the same approach and I'm getting nowhere.,english,normal,medium,stuck,stuck,human_seed
+stuck_003,I'm stuck on this question and can't see another way.,english,normal,medium,stuck,stuck,human_seed
+stuck_004,My brain is locked onto this problem.,english,normal,medium,stuck,stuck,human_seed
+stuck_005,I have reread this section five times and still don't get it.,english,low,medium,stuck,stuck,human_seed
+stuck_006,Nothing is moving forward with this task.,english,normal,medium,stuck,stuck,human_seed
+stuck_007,I've hit a wall on this assignment.,english,low,medium,stuck,stuck,human_seed
+stuck_008,I need to get my head away from this problem for a minute.,english,normal,medium,stuck,stuck,human_seed
+stuck_009,same question pe aadha ghanta se atki hui hun,roman_urdu,normal,medium,stuck,stuck,human_seed
+stuck_010,ye bug solve hi nai ho raha bohat der se,roman_urdu,normal,medium,stuck,stuck,human_seed
+stuck_011,dimagh isi problem pe atak gaya hai,roman_urdu,normal,medium,stuck,stuck,human_seed
+stuck_012,samajh nai aa raha aur same cheez repeat kar raha hun,roman_urdu,normal,medium,stuck,stuck,human_seed
+stuck_013,same code 40 mins se dekh raha hun,code_mixed,normal,medium,stuck,stuck,human_seed
+stuck_014,"I am fully stuck yaar, koi naya angle nai mil raha",code_mixed,normal,medium,stuck,stuck,human_seed
+stuck_015,assignment ke isi part pe freeze ho gayi hun,code_mixed,low,medium,stuck,stuck,human_seed
+stuck_016,same paragraph dobara dobara read kar rahi hun,code_mixed,low,medium,stuck,stuck,human_seed
+stuck_017,"yeh problem dimagh kha gayi hai, move on nai ho raha",roman_urdu,normal,medium,stuck,stuck,human_seed
+stuck_018,I think I need to detach because I'm looping on the same answer,english,normal,medium,stuck,stuck,human_seed
+stuck_019,atka hua hun aur jitna dekhta hun utna hi same lagta hai,roman_urdu,normal,medium,stuck,stuck,human_seed
+stuck_020,brain ne isi bug ko pakar liya hai and won't let go,code_mixed,normal,medium,stuck,stuck,human_seed
