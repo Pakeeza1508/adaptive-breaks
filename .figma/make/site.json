@@ -1,10 +1,12 @@
 {
-  "description": "Generate creative challenges and complete them using an interactive drawing canvas, enabling users to engage in fun, seamless artistic workflows.",
+  "title": "Kya Scene Hai?",
+  "description": "An adaptive micro-break system that understands your current work or study state and learns which short resets work better for you.",
+  "language": "en",
   "robots": {
-    "index": false
+    "index": true
   },
   "accessibility": {
-    "addBypassLinks": false,
+    "addBypassLinks": true,
     "ignoreReducedMotion": false
   }
 }
