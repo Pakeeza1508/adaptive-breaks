@@ -17,6 +17,10 @@ import {
   type SceneState,
 } from "./engine/sceneEngine";
 import { analyzeScene } from "./services/sceneApi";
+import {
+  getRemoteModeBonuses,
+  saveFeedback,
+} from "./services/feedbackApi";
 
 import {
   getModeBonuses,
@@ -704,6 +708,13 @@ function SceneResult() {
   const [sceneError, setSceneError] =
     useState("");
 
+  const [
+    remoteBonuses,
+    setRemoteBonuses,
+  ] = useState<
+    Partial<Record<BreakMode, number>> | null
+  >(null);
+
   useEffect(() => {
     if (!input) {
       navigate("/", {
@@ -757,8 +768,52 @@ function SceneResult() {
   const effectiveScene =
     scene ?? overrideScene("drained");
 
-  const personalization =
+  useEffect(() => {
+    if (
+      !scene ||
+      scene.safety !== "normal"
+    ) {
+      setRemoteBonuses(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    getRemoteModeBonuses(
+      scene.primaryState,
+    )
+      .then((bonuses) => {
+        if (!cancelled) {
+          setRemoteBonuses(
+            bonuses,
+          );
+        }
+      })
+      .catch((error) => {
+        console.warn(
+          "Remote personalization unavailable; using local fallback.",
+          error,
+        );
+
+        if (!cancelled) {
+          setRemoteBonuses(null);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    scene?.primaryState,
+    scene?.safety,
+  ]);
+
+  const localPersonalization =
     getModeBonuses(effectiveScene);
+
+  const personalization =
+    remoteBonuses ??
+    localPersonalization;
 
   const mode = chooseBreakMode(
     effectiveScene,
@@ -1575,11 +1630,33 @@ function Finish() {
 
   const submitFeedback = (outcome: FeedbackOutcome) => {
     if (session) {
+      // Immediate local update keeps the experience resilient
+      // even if the network is temporarily unavailable.
       recordOutcome(
         session.scene,
         session.mode,
         outcome,
       );
+
+      // Persist the same outcome in Supabase.
+      void saveFeedback({
+        scene: session.scene,
+        mode: session.mode,
+        outcome,
+        challengeTitle:
+          c.title,
+        challengeDuration:
+          c.duration,
+        availableTime:
+          session.availableTime,
+        startedAt:
+          session.startedAt,
+      }).catch((error) => {
+        console.warn(
+          "Could not persist feedback; local personalization was still updated.",
+          error,
+        );
+      });
     }
 
     setFeedback(outcome);

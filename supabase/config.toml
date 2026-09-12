@@ -417,3 +417,6 @@ enabled = true
 
 [functions.analyze-scene]
 verify_jwt = false
+
+[functions.feedback]
+verify_jwt = false
