@@ -488,6 +488,7 @@ function Nav() {
       </Link>
       <div>
         <Link to="/things">Tiny Things</Link>
+        <Link to="/business">Business</Link>
         <Link to="/about">Why</Link>
       </div>
     </nav>
@@ -584,120 +585,506 @@ function Home() {
     >
       <Nav />
 
-      <Doodle className="squiggle">
-        〰
-      </Doodle>
+      <section className="home-hero">
+        <Doodle className="squiggle">
+          〰
+        </Doodle>
 
-      <Doodle className="star">
-        ✦
-      </Doodle>
+        <Doodle className="star">
+          ✦
+        </Doodle>
 
-      <div className="hero-copy">
-        <p className="eyebrow">
-          YOUR BREAK SHOULD KNOW THE SCENE.
-        </p>
+        <div className="hero-copy">
+          <p className="eyebrow">
+            YOUR BRAIN CHANGES. YOUR BREAK SHOULD TOO.
+          </p>
 
-        <h1>
-          Dimagh ka kya
-          <br />
-          scene hai?
-        </h1>
+          <h1>
+            Dimagh ka kya
+            <br />
+            scene hai?
+          </h1>
 
-        <p className="intro">
-          Don't scroll through it.
-          <br />
-          Tell us the scene. We'll switch it.
-        </p>
+          <p className="hero-promise">
+            A break should know why you need one.
+          </p>
 
-        <div className="brain-input">
-          <input
-            value={text}
-            onChange={(event) =>
-              setText(event.target.value)
-            }
-            onFocus={() =>
-              setMood("curious")
-            }
-            onBlur={() =>
-              setMood("idle")
-            }
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                readScene();
+          <p className="intro">
+            Stuck? Drained? Distracted?
+            <br />
+            Don't scroll through it. Tell us the scene.
+          </p>
+
+          <div
+            className="brain-input"
+            id="scene-input"
+          >
+            <input
+              value={text}
+              onChange={(event) =>
+                setText(event.target.value)
               }
-            }}
-            placeholder={placeholder}
-            aria-label="Dimagh ka kya scene hai?"
-          />
+              onFocus={() =>
+                setMood("curious")
+              }
+              onBlur={() =>
+                setMood("idle")
+              }
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  readScene();
+                }
+              }}
+              placeholder={placeholder}
+              aria-label="Dimagh ka kya scene hai?"
+            />
+
+            <button
+              onClick={readScene}
+              aria-label="Read my scene"
+            >
+              →
+            </button>
+          </div>
+
+          <div className="time">
+            <span>I have...</span>
+
+            {[20, 60, 180].map((time) => (
+              <button
+                key={time}
+                className={
+                  availableTime === time
+                    ? "selected"
+                    : ""
+                }
+                onClick={() =>
+                  setAvailableTime(time)
+                }
+              >
+                {time === 20
+                  ? "20 sec"
+                  : time === 60
+                    ? "1 min"
+                    : "3 min"}
+              </button>
+            ))}
+          </div>
 
           <button
+            className="primary scene-read-button"
             onClick={readScene}
-            aria-label="Read my scene"
+            disabled={!text.trim()}
+            onMouseEnter={() =>
+              setMood("excited")
+            }
+            onMouseLeave={() =>
+              setMood("idle")
+            }
           >
-            →
+            READ MY SCENE <b>→</b>
           </button>
         </div>
 
-        <div className="time">
-          <span>I have...</span>
+        <div className="hero-art">
+          <div className="halo" />
 
-          {[20, 60, 180].map((time) => (
-            <button
-              key={time}
-              className={
-                availableTime === time
-                  ? "selected"
-                  : ""
-              }
-              onClick={() =>
-                setAvailableTime(time)
-              }
-            >
-              {time === 20
-                ? "20 sec"
-                : time === 60
-                  ? "1 min"
-                  : "3 min"}
-            </button>
-          ))}
+          <Companion
+            mood={mood}
+            x={look.x}
+            y={look.y}
+          />
+
+          <p className="bubble">
+            scene kya hai?
+          </p>
+
+          <Doodle className="scribble">
+            ✎
+          </Doodle>
+
+          <div className="hero-scene-stack">
+            <span>"same bug 40 mins..."</span>
+            <b>STUCK</b>
+            <i>→ DETACH</i>
+          </div>
         </div>
 
-        <button
-          className="primary scene-read-button"
-          onClick={readScene}
-          disabled={!text.trim()}
-          onMouseEnter={() =>
-            setMood("excited")
-          }
-          onMouseLeave={() =>
-            setMood("idle")
-          }
-        >
-          READ MY SCENE <b>→</b>
-        </button>
-      </div>
+        <p className="no-pressure">
+          No feed. No pressure. Bas ek reset.
+        </p>
+      </section>
 
-      <div className="hero-art">
-        <div className="halo" />
+      <section className="resonance-strip">
+        <p>
+          Been staring at the same bug?
+        </p>
+        <p>
+          Read the same paragraph five times?
+        </p>
+        <p>
+          Exam pressure hitting?
+        </p>
+        <p>
+          Brain just... done?
+        </p>
+        <strong>
+          That's the scene.
+        </strong>
+      </section>
 
-        <Companion
-          mood={mood}
-          x={look.x}
-          y={look.y}
-        />
-
-        <p className="bubble">
-          scene kya hai?
+      <section className="landing-section how-section">
+        <p className="eyebrow">
+          DIFFERENT SCENE. DIFFERENT RESET.
         </p>
 
-        <Doodle className="scribble">
-          ✎
-        </Doodle>
-      </div>
+        <h2>
+          Before you scroll,
+          <br />
+          switch the scene.
+        </h2>
 
-      <p className="no-pressure">
-        No feed. No pressure. Bas ek reset.
-      </p>
+        <div className="how-grid">
+          <article>
+            <span>01</span>
+            <strong>
+              TELL US THE SCENE
+            </strong>
+            <p>
+              Type it naturally — English, Roman Urdu,
+              or both.
+            </p>
+          </article>
+
+          <article>
+            <span>02</span>
+            <strong>
+              WE READ THE PATTERN
+            </strong>
+            <p>
+              Energy, tension and attention become one
+              simple current scene.
+            </p>
+          </article>
+
+          <article>
+            <span>03</span>
+            <strong>
+              GET A TINY RESET
+            </strong>
+            <p>
+              A 20-second to 3-minute intervention
+              matched to what you need now.
+            </p>
+          </article>
+
+          <article>
+            <span>04</span>
+            <strong>
+              IT LEARNS WHAT HELPS
+            </strong>
+            <p>
+              Better, Same or Worse becomes signal for
+              future recommendations.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className="landing-section scenes-section">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">
+              NOT EVERY TIRED BRAIN NEEDS THE SAME BREAK.
+            </p>
+            <h2>
+              Four scenes.
+              <br />
+              Four kinds of reset.
+            </h2>
+          </div>
+
+          <p>
+            Your brain isn't always tired the same way.
+            We separate fatigue, overload, scattered
+            attention and getting stuck in the same loop.
+          </p>
+        </div>
+
+        <div className="scene-tiles">
+          <article>
+            <span>↓ energy</span>
+            <strong>DRAINED</strong>
+            <p>Need a little activation.</p>
+            <b>ACTIVATE →</b>
+          </article>
+
+          <article>
+            <span>↑ tension</span>
+            <strong>OVERWHELMED</strong>
+            <p>Need less stimulation.</p>
+            <b>DOWNSHIFT →</b>
+          </article>
+
+          <article>
+            <span>↗ attention</span>
+            <strong>DISTRACTED</strong>
+            <p>Need one small target.</p>
+            <b>REFOCUS →</b>
+          </article>
+
+          <article>
+            <span>↻ loop</span>
+            <strong>STUCK</strong>
+            <p>Need cognitive distance.</p>
+            <b>DETACH →</b>
+          </article>
+        </div>
+      </section>
+
+      <section className="landing-section visual-scenes-section">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">
+              YOUR BRAIN HAS DIFFERENT SCENES.
+            </p>
+            <h2>
+              Same person.
+              <br />
+              Different scene.
+            </h2>
+          </div>
+
+          <p>
+            One day you're drained. Another day you're
+            overloaded. Sometimes your attention is
+            everywhere. Sometimes it refuses to leave one
+            problem. The reset should change with it.
+          </p>
+        </div>
+
+        <div className="scene-character-grid">
+          <article className="scene-character-card drained-card">
+            <div className="scene-character-art">
+              <div className="scene-orbit orbit-a" />
+              <div className="scene-orbit orbit-b" />
+              <Companion mood="drained" />
+            </div>
+            <div className="scene-character-copy">
+              <span>“dimagh bilkul band hai.”</span>
+              <strong>DRAINED</strong>
+              <p>Low energy. Heavy head. Need a gentle lift.</p>
+            </div>
+          </article>
+
+          <article className="scene-character-card overwhelmed-card">
+            <div className="scene-character-art">
+              <div className="scene-orbit orbit-a" />
+              <div className="scene-orbit orbit-b" />
+              <Companion mood="overwhelmed" />
+            </div>
+            <div className="scene-character-copy">
+              <span>“kal exam hai aur sab pending hai.”</span>
+              <strong>OVERWHELMED</strong>
+              <p>Too much at once. Need the noise turned down.</p>
+            </div>
+          </article>
+
+          <article className="scene-character-card distracted-card">
+            <div className="scene-character-art">
+              <div className="scene-orbit orbit-a" />
+              <div className="scene-orbit orbit-b" />
+              <Companion mood="distracted" />
+            </div>
+            <div className="scene-character-copy">
+              <span>“focus nai ho raha.”</span>
+              <strong>DISTRACTED</strong>
+              <p>Attention everywhere. Need one small target.</p>
+            </div>
+          </article>
+
+          <article className="scene-character-card stuck-card">
+            <div className="scene-character-art">
+              <div className="scene-orbit orbit-a" />
+              <div className="scene-orbit orbit-b" />
+              <Companion mood="stuck" />
+            </div>
+            <div className="scene-character-copy">
+              <span>“same bug 40 mins se...”</span>
+              <strong>STUCK</strong>
+              <p>Same loop. No progress. Need a clean detour.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="landing-section language-section">
+        <div className="language-visual">
+          <span className="phrase p1">I'm cooked</span>
+          <span className="phrase p2">focus nai ho raha</span>
+          <span className="phrase p3">my brain is fried</span>
+          <span className="phrase p4">assignment nahi ho rahi</span>
+          <span className="phrase p5">kal exam hai 💀</span>
+          <span className="phrase p6">same bug again...</span>
+
+          <div className="language-center">
+            <Companion mood="curious" />
+            <strong>Say it how it is.</strong>
+            <p>English · Roman Urdu · code-mixed</p>
+          </div>
+        </div>
+
+        <div className="language-copy">
+          <p className="eyebrow">
+            MESSY INPUT IS THE POINT.
+          </p>
+          <h2>
+            You don't need
+            <br />
+            the perfect words.
+          </h2>
+          <p>
+            “I'm tired” is easy. Real study and work stress
+            sounds more like “dimagh band hogaya”, “same bug
+            40 mins se”, or “focus nai ho raha”. Kya Scene Hai?
+            is built around that language.
+          </p>
+          <a href="#scene-input" className="text-link-cta">
+            TELL US YOUR SCENE →
+          </a>
+        </div>
+      </section>
+
+      <section className="landing-section adaptation-section">
+        <div className="adaptation-copy">
+          <p className="eyebrow">
+            A BREAK SHOULD KNOW WHY YOU NEED ONE.
+          </p>
+
+          <h2>
+            Not every break works
+            <br />
+            for everyone.
+          </h2>
+
+          <p>
+            Kya Scene Hai? does not stop at one
+            recommendation. It remembers whether a
+            reset felt Better, Same or Worse and uses
+            that history to adjust what it recommends
+            next.
+          </p>
+        </div>
+
+        <div className="adaptation-demo">
+          <div>
+            <span>STUCK</span>
+            <b>MYSTERY SQUIGGLE</b>
+            <strong>BETTER ✓</strong>
+          </div>
+          <div>
+            <span>STUCK</span>
+            <b>ANNOYED CIRCLE</b>
+            <strong>WORSE ×</strong>
+          </div>
+          <p>
+            ↺ Next STUCK session:
+            previous outcomes influence the choice.
+          </p>
+        </div>
+      </section>
+
+      <section
+        className="landing-section research-section"
+        id="research"
+      >
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">
+              BUILT, NOT JUST PROMPTED.
+            </p>
+            <h2>
+              Research you can
+              <br />
+              actually inspect.
+            </h2>
+          </div>
+
+          <p>
+            The project includes a code-mixed cognitive
+            state dataset, reproducible Kaggle
+            experiments and an open source implementation.
+          </p>
+        </div>
+
+        <div className="research-grid">
+          <a
+            href="https://www.kaggle.com/datasets/pakeezakhalid/kya-scene-hai-reviewed-data"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>DATASET ↗</span>
+            <strong>
+              314 experiment rows
+            </strong>
+            <p>
+              80 seed groups · English · Roman Urdu ·
+              code-mixed
+            </p>
+          </a>
+
+          <a
+            href="https://www.kaggle.com/code/pakeezakhalid/kya-scene-hai-benchmark"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>KAGGLE NOTEBOOK ↗</span>
+            <strong>
+              Macro-F1 0.8464
+            </strong>
+            <p>
+              Reproducible baseline comparison and
+              evaluation artifacts.
+            </p>
+          </a>
+
+          <a
+            href="https://github.com/Pakeeza1508/adaptive-breaks"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>GITHUB ↗</span>
+            <strong>
+              Open implementation
+            </strong>
+            <p>
+              Scene Engine, adaptive feedback loop,
+              dataset tooling and app source.
+            </p>
+          </a>
+        </div>
+      </section>
+
+      <section className="final-cta">
+        <p className="eyebrow">
+          YOUR NEXT SCROLL CAN WAIT.
+        </p>
+
+        <h2>
+          What's the scene?
+        </h2>
+
+        <p>
+          No feed. No overthinking. Bas ek reset.
+        </p>
+
+        <a
+          className="landing-cta"
+          href="#scene-input"
+        >
+          READ MY SCENE →
+        </a>
+      </section>
     </main>
   );
 }
@@ -2019,6 +2406,278 @@ function Things() {
     </main>
   );
 }
+
+function Business() {
+  return (
+    <main className="page business-page">
+      <Nav />
+
+      <section className="business-hero">
+        <p className="eyebrow">
+          BUSINESS MODEL // FROM ONE RESET TO MANY
+        </p>
+
+        <h1>
+          Useful for one person.
+          <br />
+          Scalable for learning communities.
+        </h1>
+
+        <p className="business-lead">
+          Kya Scene Hai? starts as a free, low-friction
+          micro-break tool for students and knowledge
+          workers. Long-term revenue comes from premium
+          personalization, institutional licensing and
+          platform integrations.
+        </p>
+
+        <div className="business-value-line">
+          <span>LAND WITH INDIVIDUALS</span>
+          <b>→</b>
+          <span>EXPAND THROUGH INSTITUTIONS</span>
+          <b>→</b>
+          <span>INTEGRATE INTO PLATFORMS</span>
+        </div>
+      </section>
+
+      <section className="business-section">
+        <div className="business-section-head">
+          <div>
+            <p className="eyebrow">WHO PAYS?</p>
+            <h2>
+              A simple
+              <br />
+              monetization ladder.
+            </h2>
+          </div>
+
+          <p>
+            The MVP stays easy to try. Revenue is added
+            where users or organizations receive deeper
+            personalization, deployment support or
+            integration value.
+          </p>
+        </div>
+
+        <div className="business-tier-grid">
+          <article className="business-tier free-tier">
+            <span>01 · FREE</span>
+            <h3>Individuals</h3>
+            <p>
+              Students, developers and knowledge workers
+              can use the core product with no friction.
+            </p>
+            <ul>
+              <li>Scene detection</li>
+              <li>20 sec–3 min resets</li>
+              <li>Better / Same / Worse feedback</li>
+              <li>Lightweight personalization</li>
+            </ul>
+            <strong>Goal: adoption + feedback</strong>
+          </article>
+
+          <article className="business-tier pro-tier">
+            <span>02 · PRO</span>
+            <h3>Power users</h3>
+            <p>
+              A future paid tier for users who want
+              deeper history and stronger personalization.
+            </p>
+            <ul>
+              <li>Longer-term reset history</li>
+              <li>Advanced preferences</li>
+              <li>Weekly personal insights</li>
+              <li>Cross-device history</li>
+            </ul>
+            <strong>Pricing hypothesis: low-cost monthly plan</strong>
+          </article>
+
+          <article className="business-tier b2b-tier">
+            <span>03 · B2B</span>
+            <h3>Universities & EdTech</h3>
+            <p>
+              Institutional access for learning
+              communities and digital education products.
+            </p>
+            <ul>
+              <li>Campus / cohort access</li>
+              <li>LMS or product integration</li>
+              <li>Admin deployment support</li>
+              <li>Privacy-safe aggregate insights</li>
+            </ul>
+            <strong>Goal: recurring institutional revenue</strong>
+          </article>
+
+          <article className="business-tier api-tier">
+            <span>04 · API / SDK</span>
+            <h3>Platforms</h3>
+            <p>
+              A future integration layer for productivity
+              and learning products that want adaptive
+              break recommendations inside their own UX.
+            </p>
+            <ul>
+              <li>State-to-reset API</li>
+              <li>Embedded feedback loop</li>
+              <li>Usage-based or contracted access</li>
+              <li>White-label integration potential</li>
+            </ul>
+            <strong>Goal: platform-scale distribution</strong>
+          </article>
+        </div>
+
+        <p className="business-note">
+          Pricing shown here is intentionally directional.
+          The current hackathon MVP is validating product
+          usefulness and personalization before final
+          commercial pricing is set.
+        </p>
+      </section>
+
+      <section className="business-section customer-section">
+        <div className="business-section-head">
+          <div>
+            <p className="eyebrow">CUSTOMER SEGMENTS</p>
+            <h2>
+              Start narrow.
+              <br />
+              Expand carefully.
+            </h2>
+          </div>
+
+          <p>
+            The initial wedge is students and people doing
+            cognitively demanding work. Institutional
+            customers become relevant once the individual
+            product proves useful.
+          </p>
+        </div>
+
+        <div className="customer-grid">
+          <article>
+            <span>🎓</span>
+            <strong>STUDENTS</strong>
+            <p>Study fatigue, exam pressure, scattered focus and getting stuck.</p>
+          </article>
+
+          <article>
+            <span>⌨</span>
+            <strong>DEVELOPERS</strong>
+            <p>Debugging loops, mental fatigue and context-lock during technical work.</p>
+          </article>
+
+          <article>
+            <span>◫</span>
+            <strong>KNOWLEDGE WORKERS</strong>
+            <p>Short resets between cognitively demanding tasks without opening another feed.</p>
+          </article>
+
+          <article>
+            <span>🏫</span>
+            <strong>UNIVERSITIES</strong>
+            <p>Privacy-conscious support for study habits across learning communities.</p>
+          </article>
+
+          <article>
+            <span>◎</span>
+            <strong>EDTECH</strong>
+            <p>Adaptive breaks embedded into online learning journeys.</p>
+          </article>
+
+          <article>
+            <span>↗</span>
+            <strong>PRODUCTIVITY PLATFORMS</strong>
+            <p>An API layer for state-aware reset recommendations.</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="business-section economics-section">
+        <div className="economics-copy">
+          <p className="eyebrow">WHY THIS CAN START LEAN</p>
+          <h2>
+            Low infrastructure
+            <br />
+            overhead at MVP stage.
+          </h2>
+          <p>
+            The current architecture uses a lightweight
+            React frontend, Supabase and short structured
+            Gemini calls. No paid always-on GPU server is
+            required for the MVP.
+          </p>
+        </div>
+
+        <div className="economics-flow">
+          <div>
+            <span>ACQUISITION</span>
+            <strong>Student communities<br />+ organic sharing</strong>
+          </div>
+          <b>→</b>
+          <div>
+            <span>RETENTION</span>
+            <strong>Better personalization<br />over repeated use</strong>
+          </div>
+          <b>→</b>
+          <div>
+            <span>MONETIZATION</span>
+            <strong>Pro + institutional<br />+ API</strong>
+          </div>
+        </div>
+      </section>
+
+      <section className="business-section privacy-business">
+        <div>
+          <p className="eyebrow">
+            PRIVACY IS PART OF THE BUSINESS MODEL.
+          </p>
+          <h2>
+            Institutions get trends.
+            <br />
+            Not private thoughts.
+          </h2>
+        </div>
+
+        <div className="privacy-business-card">
+          <p>
+            A future institutional dashboard should show
+            aggregate product usage and outcome trends,
+            not raw individual free-text input or private
+            student state histories.
+          </p>
+
+          <div>
+            <span>✓ Aggregate usage</span>
+            <span>✓ Reset effectiveness trends</span>
+            <span>✓ Cohort-level patterns</span>
+            <span>× Raw personal input</span>
+            <span>× Individual surveillance</span>
+            <span>× Clinical profiling</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="business-final">
+        <p className="eyebrow">BUSINESS THESIS</p>
+        <h2>
+          Land with students.
+          <br />
+          Expand through institutions.
+        </h2>
+        <p>
+          The product earns trust at the individual level
+          first. Commercial scale comes after demonstrated
+          usefulness, repeat engagement and privacy-safe
+          deployment.
+        </p>
+        <Link to="/" className="business-home-link">
+          TRY THE PRODUCT →
+        </Link>
+      </section>
+    </main>
+  );
+}
+
 function About() {
   return (
     <main className="page about">
@@ -2248,6 +2907,7 @@ export const router = createBrowserRouter([
   { path: "/play", Component: Play },
   { path: "/finish", Component: Finish },
   { path: "/things", Component: Things },
+  { path: "/business", Component: Business },
   { path: "/about", Component: About },
   { path: "/exit", Component: Exit },
   { path: "/support", Component: Support },

@@ -466,6 +466,87 @@ structured state extraction
 
 No paid always-on GPU server is required.
 
+
+## Business model
+
+The current MVP is free to use and is focused on validating whether state-matched adaptive micro-breaks are useful in real study and work contexts.
+
+The long-term business model is intentionally staged.
+
+### 1. Free individual product
+
+The free product is designed for students, developers, and knowledge workers.
+
+It includes:
+
+- core scene detection;
+- 20-second to 3-minute micro-breaks;
+- Better / Same / Worse outcome feedback;
+- lightweight personalization.
+
+The purpose of the free tier is adoption, product learning, and collection of explicit outcome feedback with minimal friction.
+
+### 2. Pro individual tier
+
+A future low-cost paid tier could provide:
+
+- longer-term personalization history;
+- richer user preferences;
+- weekly personal reset insights;
+- cross-device history;
+- custom routines and intervention preferences.
+
+Final pricing has not been validated yet and is therefore treated as a pricing hypothesis rather than a fixed launch price.
+
+### 3. Institutional licensing
+
+The primary long-term B2B opportunity is universities, coding bootcamps, online learning platforms, and other learning-focused organizations.
+
+Potential institutional value includes:
+
+- organization-wide access;
+- LMS or learning-platform integration;
+- deployment and onboarding support;
+- privacy-safe aggregate usage and outcome trends.
+
+Institutional products should not expose raw personal free-text input or individual state histories to administrators.
+
+### 4. API / SDK integrations
+
+A later product layer could expose the state-to-reset and personalization workflow to:
+
+- EdTech platforms;
+- productivity tools;
+- learning management systems;
+- focus and study applications.
+
+Possible commercial models include contracted platform access or usage-based API pricing.
+
+### Go-to-market thesis
+
+```text
+Free individual product
+        ↓
+student / developer adoption
+        ↓
+repeat use + outcome feedback
+        ↓
+stronger personalization
+        ↓
+institutional pilots
+        ↓
+B2B licensing / integrations
+```
+
+The business thesis is:
+
+> **Land with individuals. Expand through institutions and platforms.**
+
+The MVP is deliberately low-overhead: it does not require an always-on GPU server, and the current stack is designed around lightweight hosted infrastructure.
+
+A dedicated `/business` page in the application presents this model in a judge- and stakeholder-friendly format.
+
+
 ## Tech stack
 
 ### Frontend
