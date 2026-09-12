@@ -119,16 +119,39 @@ export async function saveFeedback({
   });
 }
 
-export async function getRemoteModeBonuses(
+export type RemotePersonalization = {
+  modeBonuses: Partial<Record<BreakMode, number>>;
+  challengeBonuses: Record<string, number>;
+  observations: number;
+};
+
+export async function getRemotePersonalization(
   primaryState: PrimaryState,
-): Promise<
-  Partial<Record<BreakMode, number>>
-> {
+): Promise<RemotePersonalization> {
   const data = await callFeedback({
     action: "summary",
     clientId: getClientId(),
     primaryState,
   });
 
-  return data.bonuses ?? {};
+  return {
+    modeBonuses: data.bonuses ?? {},
+    challengeBonuses: data.challengeBonuses ?? {},
+    observations: Number(data.observations ?? 0),
+  };
+}
+
+export async function saveSceneCorrection({
+  predictedScene,
+  correctedState,
+}: {
+  predictedScene: SceneState;
+  correctedState: PrimaryState;
+}) {
+  return callFeedback({
+    action: "record_correction",
+    clientId: getClientId(),
+    predictedScene,
+    correctedState,
+  });
 }

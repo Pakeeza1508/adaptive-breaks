@@ -18,8 +18,10 @@ import {
 } from "./engine/sceneEngine";
 import { analyzeScene } from "./services/sceneApi";
 import {
-  getRemoteModeBonuses,
+  getRemotePersonalization,
   saveFeedback,
+  saveSceneCorrection,
+  type RemotePersonalization,
 } from "./services/feedbackApi";
 
 import {
@@ -337,6 +339,7 @@ const challengeModes: Record<
 function pickAdaptiveChallenge(
   mode: BreakMode,
   availableTime: number,
+  challengeBonuses: Record<string, number> = {},
 ) {
   let pool = challenges.filter(
     (challenge) =>
@@ -368,10 +371,36 @@ function pickAdaptiveChallenge(
   const finalPool =
     fresh.length > 0 ? fresh : pool;
 
-  const selected =
-    finalPool[
-      Math.floor(Math.random() * finalPool.length)
-    ];
+  const hasChallengeHistory =
+    Object.keys(challengeBonuses).length > 0;
+
+  let selected: Challenge;
+
+  if (hasChallengeHistory) {
+    const ranked = finalPool.map(
+      (challenge) => ({
+        challenge,
+        score:
+          challengeBonuses[challenge.title] ?? 0,
+      }),
+    );
+
+    const bestScore = Math.max(
+      ...ranked.map((item) => item.score),
+    );
+
+    const best = ranked
+      .filter((item) => item.score === bestScore)
+      .map((item) => item.challenge);
+
+    selected =
+      best[Math.floor(Math.random() * best.length)];
+  } else {
+    selected =
+      finalPool[
+        Math.floor(Math.random() * finalPool.length)
+      ];
+  }
 
   recent.push(selected.title);
 
@@ -709,11 +738,14 @@ function SceneResult() {
     useState("");
 
   const [
-    remoteBonuses,
-    setRemoteBonuses,
-  ] = useState<
-    Partial<Record<BreakMode, number>> | null
-  >(null);
+    remotePersonalization,
+    setRemotePersonalization,
+  ] = useState<RemotePersonalization | null>(null);
+
+  const [predictedScene, setPredictedScene] =
+    useState<SceneState | null>(null);
+
+  const correctionSavedRef = useRef(false);
 
   useEffect(() => {
     if (!input) {
@@ -732,6 +764,8 @@ function SceneResult() {
       .then((result) => {
         if (!cancelled) {
           setScene(result);
+          setPredictedScene(result);
+          correctionSavedRef.current = false;
         }
       })
       .catch((error) => {
@@ -773,20 +807,18 @@ function SceneResult() {
       !scene ||
       scene.safety !== "normal"
     ) {
-      setRemoteBonuses(null);
+      setRemotePersonalization(null);
       return;
     }
 
     let cancelled = false;
 
-    getRemoteModeBonuses(
+    getRemotePersonalization(
       scene.primaryState,
     )
-      .then((bonuses) => {
+      .then((summary) => {
         if (!cancelled) {
-          setRemoteBonuses(
-            bonuses,
-          );
+          setRemotePersonalization(summary);
         }
       })
       .catch((error) => {
@@ -796,7 +828,7 @@ function SceneResult() {
         );
 
         if (!cancelled) {
-          setRemoteBonuses(null);
+          setRemotePersonalization(null);
         }
       });
 
@@ -812,8 +844,19 @@ function SceneResult() {
     getModeBonuses(effectiveScene);
 
   const personalization =
-    remoteBonuses ??
+    remotePersonalization?.modeBonuses ??
     localPersonalization;
+
+  const challengeBonuses =
+    remotePersonalization?.challengeBonuses ?? {};
+
+  const observations =
+    remotePersonalization?.observations ?? 0;
+
+  const baseMode = chooseBreakMode(
+    effectiveScene,
+    {},
+  );
 
   const mode = chooseBreakMode(
     effectiveScene,
@@ -825,13 +868,21 @@ function SceneResult() {
       pickAdaptiveChallenge(
         mode,
         availableTime,
+        challengeBonuses,
       ),
     [
       mode,
       availableTime,
       effectiveScene.primaryState,
+      challengeBonuses,
     ],
   );
+
+  const selectedModeBonus =
+    personalization[mode] ?? 0;
+
+  const selectedChallengeBonus =
+    challengeBonuses[challenge.title] ?? 0;
 
   const startBreak = () => {
     if (!scene) return;
@@ -855,6 +906,34 @@ function SceneResult() {
         },
       },
     );
+  };
+
+  const correctScene = (
+    state: PrimaryState,
+  ) => {
+    if (!scene || state === scene.primaryState) {
+      return;
+    }
+
+    if (
+      predictedScene &&
+      !correctionSavedRef.current &&
+      state !== predictedScene.primaryState
+    ) {
+      correctionSavedRef.current = true;
+
+      void saveSceneCorrection({
+        predictedScene,
+        correctedState: state,
+      }).catch((error) => {
+        console.warn(
+          "Could not persist scene correction.",
+          error,
+        );
+      });
+    }
+
+    setScene(overrideScene(state));
   };
 
   const corrections: {
@@ -960,12 +1039,6 @@ function SceneResult() {
             }
           </strong>
 
-          <small>
-            {Math.round(
-              scene.confidence * 100,
-            )}
-            % confidence
-          </small>
         </div>
 
         <div className="scene-meters">
@@ -1007,6 +1080,35 @@ function SceneResult() {
             {challenge.title}
           </span>
 
+          {observations > 0 && (
+            <div className="personalization-note">
+              <div>
+                <strong>↺ Personalized</strong>
+                <span>
+                  from {observations} previous{" "}
+                  {observations === 1 ? "reset" : "resets"}
+                </span>
+              </div>
+
+              <details>
+                <summary>Why this?</summary>
+                <p>
+                  Scene: {sceneLabels[scene.primaryState]}
+                  {" · "}Base: {modeLabels[baseMode]}
+                  {" · "}Final: {modeLabels[mode]}
+                </p>
+                <p>
+                  Learned mode signal:{" "}
+                  {selectedModeBonus >= 0 ? "+" : ""}
+                  {selectedModeBonus.toFixed(3)}
+                  {" · "}Activity signal:{" "}
+                  {selectedChallengeBonus >= 0 ? "+" : ""}
+                  {selectedChallengeBonus.toFixed(3)}
+                </p>
+              </details>
+            </div>
+          )}
+
           <button
             className="primary"
             onClick={startBreak}
@@ -1030,9 +1132,7 @@ function SceneResult() {
                       : ""
                   }
                   onClick={() =>
-                    setScene(
-                      overrideScene(state),
-                    )
+                    correctScene(state)
                   }
                 >
                   {label}

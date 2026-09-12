@@ -509,34 +509,59 @@ No paid always-on GPU server is required.
 
 ```text
 adaptive-breaks/
+
 ├── src/
 │   ├── engine/
 │   │   ├── sceneEngine.ts
 │   │   └── personalization.ts
+│   │
 │   ├── services/
-│   │   └── sceneApi.ts
+│   │   ├── sceneApi.ts
+│   │   └── feedbackApi.ts
+│   │
 │   ├── routes.tsx
 │   └── index.css
 │
 ├── supabase/
-│   └── functions/
-│       └── analyze-scene/
-│           └── index.ts
+│   ├── functions/
+│   │   ├── analyze-scene/
+│   │   │   └── index.ts
+│   │   │
+│   │   └── feedback/
+│   │       └── index.ts
+│   │
+│   ├── migrations/
+│   │   └── 20260912170000_create_break_feedback.sql
+│   │
+│   └── config.toml
 │
 ├── dataset/
 │   ├── README.md
 │   ├── LABEL_GUIDE.md
 │   ├── WORKFLOW.md
 │   ├── data/
+│   │   ├── seeds.csv
+│   │   ├── seeds.jsonl
+│   │   ├── review_queue.csv
+│   │   ├── review_queue_reviewed.csv
+│   │   └── clean_generated.jsonl
+│   │
 │   └── scripts/
+│       ├── prepare_review.py
+│       ├── auto_review_with_groq.py
+│       └── finish_review_with_gemini.py
 │
 ├── kaggle/
-│   └── train_and_compare.py
+│   ├── train_and_compare.py
+│   ├── requirements.txt
+│   └── kernel-metadata.template.json
 │
 ├── scripts/
 │   ├── publish_dataset_to_kaggle.ps1
 │   └── run_kaggle_and_download.ps1
 │
+├── KAGGLE_SETUP.md
+├── .gitignore
 └── README.md
 ```
 

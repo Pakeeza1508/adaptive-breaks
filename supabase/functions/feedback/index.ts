@@ -155,7 +155,7 @@ Deno.serve(async (req) => {
 
       url.searchParams.set(
         "select",
-        "break_mode,feedback",
+        "break_mode,feedback,challenge_title",
       );
 
       url.searchParams.set(
@@ -232,21 +232,44 @@ Deno.serve(async (req) => {
         },
       };
 
+      const challengeStats: Record<
+        string,
+        {
+          attempts: number;
+          rewardSum: number;
+        }
+      > = {};
+
       for (const row of rows) {
         if (
-          !MODES.includes(
+          MODES.includes(
             row.break_mode,
           )
         ) {
-          continue;
+          const mode =
+            row.break_mode as BreakMode;
+
+          stats[mode].attempts += 1;
+          stats[mode].rewardSum +=
+            rewardFor(row.feedback);
         }
 
-        const mode =
-          row.break_mode as BreakMode;
+        if (
+          typeof row.challenge_title === "string" &&
+          row.challenge_title.trim()
+        ) {
+          const title =
+            row.challenge_title.trim();
 
-        stats[mode].attempts += 1;
-        stats[mode].rewardSum +=
-          rewardFor(row.feedback);
+          challengeStats[title] ??= {
+            attempts: 0,
+            rewardSum: 0,
+          };
+
+          challengeStats[title].attempts += 1;
+          challengeStats[title].rewardSum +=
+            rewardFor(row.feedback);
+        }
       }
 
       const bonuses: Record<
@@ -285,10 +308,115 @@ Deno.serve(async (req) => {
           0.35;
       }
 
+      const challengeBonuses:
+        Record<string, number> = {};
+
+      for (
+        const [title, entry]
+        of Object.entries(challengeStats)
+      ) {
+        const averageReward =
+          entry.rewardSum / entry.attempts;
+
+        const evidenceWeight =
+          Math.min(entry.attempts / 3, 1);
+
+        challengeBonuses[title] =
+          averageReward *
+          evidenceWeight *
+          0.45;
+      }
+
       return jsonResponse({
         bonuses,
+        challengeBonuses,
         observations: rows.length,
       });
+    }
+
+    if (
+      body.action ===
+      "record_correction"
+    ) {
+      const {
+        clientId,
+        predictedScene,
+        correctedState,
+      } = body;
+
+      if (
+        !isUuid(clientId) ||
+        !predictedScene ||
+        !STATES.has(predictedScene.primaryState) ||
+        !STATES.has(correctedState) ||
+        !ENERGIES.has(predictedScene.energy) ||
+        !TENSIONS.has(predictedScene.tension) ||
+        !ATTENTIONS.has(predictedScene.attention)
+      ) {
+        return jsonResponse(
+          { error: "Invalid correction payload." },
+          400,
+        );
+      }
+
+      if (
+        predictedScene.primaryState ===
+        correctedState
+      ) {
+        return jsonResponse({
+          saved: false,
+          reason: "No correction required.",
+        });
+      }
+
+      const row = {
+        client_id: clientId,
+        predicted_state:
+          predictedScene.primaryState,
+        corrected_state: correctedState,
+        predicted_energy:
+          predictedScene.energy,
+        predicted_tension:
+          predictedScene.tension,
+        predicted_attention:
+          predictedScene.attention,
+        scene_confidence:
+          Number.isFinite(predictedScene.confidence)
+            ? Math.max(
+                0,
+                Math.min(1, predictedScene.confidence),
+              )
+            : null,
+      };
+
+      const response = await fetch(
+        `${supabaseUrl}/rest/v1/scene_corrections`,
+        {
+          method: "POST",
+          headers: {
+            apikey: serviceRoleKey,
+            Authorization:
+              `Bearer ${serviceRoleKey}`,
+            "Content-Type": "application/json",
+            Prefer: "return=minimal",
+          },
+          body: JSON.stringify(row),
+        },
+      );
+
+      if (!response.ok) {
+        console.error(
+          "Scene correction insert failed:",
+          await response.text(),
+        );
+
+        return jsonResponse(
+          { error: "Could not save correction." },
+          502,
+        );
+      }
+
+      return jsonResponse({ saved: true });
     }
 
     if (body.action === "record") {
