@@ -1,0 +1,16 @@
+{
+  "id": "YOUR_KAGGLE_USERNAME/kya-scene-hai-benchmark",
+  "title": "Kya Scene Hai Benchmark",
+  "code_file": "train_and_compare.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_internet": "true",
+  "dataset_sources": [
+    "YOUR_KAGGLE_USERNAME/kya-scene-hai-reviewed-data"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

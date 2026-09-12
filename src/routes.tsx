@@ -7,7 +7,6 @@ import {
 } from "react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  analyzeSceneMock,
   chooseBreakMode,
   modeLabels,
   overrideScene,
@@ -17,6 +16,7 @@ import {
   type PrimaryState,
   type SceneState,
 } from "./engine/sceneEngine";
+import { analyzeScene } from "./services/sceneApi";
 
 import {
   getModeBonuses,
@@ -696,31 +696,72 @@ function SceneResult() {
     routeState?.availableTime ?? 60;
 
   const [scene, setScene] =
-    useState<SceneState>(() =>
-      analyzeSceneMock(input),
-    );
+    useState<SceneState | null>(null);
+
+  const [sceneLoading, setSceneLoading] =
+    useState(true);
+
+  const [sceneError, setSceneError] =
+    useState("");
 
   useEffect(() => {
     if (!input) {
       navigate("/", {
         replace: true,
       });
+      return;
     }
+
+    let cancelled = false;
+
+    setSceneLoading(true);
+    setSceneError("");
+
+    analyzeScene(input)
+      .then((result) => {
+        if (!cancelled) {
+          setScene(result);
+        }
+      })
+      .catch((error) => {
+        console.error("Scene analysis failed:", error);
+
+        if (!cancelled) {
+          setSceneError(
+            error instanceof Error
+              ? error.message
+              : "Could not read the scene.",
+          );
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setSceneLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [input, navigate]);
 
   useEffect(() => {
-    if (scene.safety === "elevated") {
+    if (scene?.safety === "elevated") {
       navigate("/support", {
         replace: true,
       });
     }
   }, [scene, navigate]);
 
+  // Keep hook order stable while the API request is loading.
+  const effectiveScene =
+    scene ?? overrideScene("drained");
+
   const personalization =
-    getModeBonuses(scene);
+    getModeBonuses(effectiveScene);
 
   const mode = chooseBreakMode(
-    scene,
+    effectiveScene,
     personalization,
   );
 
@@ -733,11 +774,13 @@ function SceneResult() {
     [
       mode,
       availableTime,
-      scene.primaryState,
+      effectiveScene.primaryState,
     ],
   );
 
   const startBreak = () => {
+    if (!scene) return;
+
     const session: BreakSession = {
       input,
       availableTime,
@@ -780,6 +823,50 @@ function SceneResult() {
       label: "Stuck",
     },
   ];
+
+  if (sceneLoading) {
+    return (
+      <main className="page scene-result">
+        <Nav />
+        <section className="scene-result-inner">
+          <p className="eyebrow">
+            SCENE ENGINE // READING
+          </p>
+          <h1>
+            Scene samajh
+            <br />
+            rahe hain...
+          </h1>
+          <p className="scene-original-input">
+            “{input}”
+          </p>
+        </section>
+      </main>
+    );
+  }
+
+  if (sceneError || !scene) {
+    return (
+      <main className="page scene-result">
+        <Nav />
+        <section className="scene-result-inner">
+          <p className="eyebrow">
+            SCENE ENGINE // CONNECTION ISSUE
+          </p>
+          <h1>Scene read nahi hua.</h1>
+          <p>
+            {sceneError || "Please try again."}
+          </p>
+          <button
+            className="primary"
+            onClick={() => navigate("/")}
+          >
+            TRY AGAIN →
+          </button>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="page scene-result">

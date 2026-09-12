@@ -1,105 +1,176 @@
-# Kya Scene Hai?
+Kya Scene Hai?
 
-**An adaptive micro-break system for students.**
+Your brain changes. Your break should too.
 
-Kya Scene Hai? is a non-clinical AI system that tries to answer one small question:
+Kya Scene Hai? is a non-clinical adaptive micro-break system for students and knowledge workers. It estimates a user's momentary study/work state, selects a short intervention that better fits that state, asks whether the break helped, and uses that outcome to improve later recommendations.
 
-> **What kind of break does this student need right now?**
+The project is designed around one practical question:
 
-Instead of giving every user the same timer, breathing exercise, or generic "take a break" reminder, the system estimates a student's momentary study/work state and selects a short micro-break that better fits that state.
+What kind of break does this person need right now?
 
-The current MVP focuses on four momentary states:
+Instead of giving every user the same timer, breathing exercise, or generic reminder, the system tries to distinguish whether the user is currently drained, overwhelmed, distracted, or stuck, and then chooses an appropriate 20-second to 3-minute intervention.
 
-- **Drained** — low energy / mentally flat
-- **Overwhelmed** — high tension / overloaded
-- **Distracted** — scattered attention
-- **Stuck** — attention locked on the same problem or loop
+Core idea
 
-Those states map to four intervention modes:
+A user writes a short natural-language statement such as:
 
-- **ACTIVATE** — gently increase stimulation
-- **DOWNSHIFT** — reduce overload
-- **REFOCUS** — give attention one small target
-- **DETACH** — switch away from the current cognitive loop
+I'm cooked
 
-After the break, the user gives one-tap feedback:
+kal exam hai aur focus nai ho raha
 
-**Better / Same / Worse**
+same bug 40 mins se dekh raha hun
 
-That feedback is used to adapt later selections for that user.
+dimagh band hogaya
 
----
+I keep switching tabs and can't read one paragraph
 
-## Why this problem?
+The system converts the text into a small structured state:
 
-Students often take breaks by opening social media or switching to another feed. A break is not necessarily a single intervention: different break activities may have different recovery effects, and different user states may call for different kinds of breaks.
+{
+  "energy": "low",
+  "tension": "medium",
+  "attention": "stuck",
+  "primary_state": "stuck",
+  "confidence": 0.87,
+  "safety": "normal"
+}
 
-A 2026 Frontiers in Psychology study on micro-breaks between study sessions found a positive relationship between micro-breaks and learning concentration in university students. Importantly for this project, the authors listed several limitations and future directions:
+The language model only performs state extraction.
 
-- micro-breaks were treated as a single construct despite different break types;
-- future work should compare different types of micro-breaks in more detail;
-- cross-cultural differences in micro-break patterns should be studied;
-- future systems could use AI to recommend personalized breaks based on real-time student states such as fatigue and emotional fluctuations.
+The final break selection is made by our own Scene Engine, not by an unrestricted chatbot response.
 
-Reference:
+State model
 
-H. Zhou, L. Fang, X. Song, W. Yin, J. Kang, Y. Huang, and J. Huang,  
-"Do micro-breaks between study sessions enhance Chinese university students' learning concentration?"  
-Frontiers in Psychology, vol. 17, 2026.  
-DOI: 10.3389/fpsyg.2026.1714389
+The MVP intentionally avoids broad emotion recognition and clinical labels.
 
-A second 2026 paper, "Smart Break Recommendation System Based on Student Mental Fatigue and Task Type," also motivates personalized break recommendation. It proposes fatigue/task detection and reinforcement-learning-based customization using passive behavioral signals such as keyboard and mouse activity.
+Energy
 
-Reference:
+low
 
-S. Vinesh, G. Rakshitha, V. Skandapriya, G. M. Bhoomika, and J. D. Hemalatha,  
-"Smart Break Recommendation System Based on Student Mental Fatigue and Task Type,"  
-2026 International Conference on Smart Futuristic Technology (ICSFT), 2026.  
-DOI: 10.1109/ICSFT66733.2026.11507606
+normal
 
----
+high
 
-## Our gap
+Tension
 
-Kya Scene Hai? does **not** claim that adaptive breaks have never been studied.
+low
 
-The project explores a narrower gap:
+medium
 
-> **Low-friction, text-first adaptive micro-break selection for students, using natural English, Roman Urdu, and Urdu-English code-mixed language, with immediate user feedback to personalize which type of break is selected.**
+high
 
-Instead of requiring wearables, EEG, webcam analysis, or continuous passive monitoring, the MVP starts from a simple user statement such as:
+Attention
 
-- "I'm cooked"
-- "kal exam hai aur focus nai ho raha"
-- "same bug 40 mins se dekh raha hun"
-- "dimagh band hogaya"
-- "I keep switching tabs and can't read one paragraph"
+okay
 
-The system extracts a structured state, chooses a break mode, runs a 20-second to 3-minute intervention, and learns from the outcome.
+scattered
 
----
+stuck
 
-## System flow
+User-facing primary states
 
-```text
+DRAINED
+
+Low energy or mental fatigue is the dominant signal.
+
+OVERWHELMED
+
+High tension, workload pressure, panic, or overload is dominant.
+
+DISTRACTED
+
+Attention repeatedly shifts and the user cannot stay on one target.
+
+STUCK
+
+Attention is locked on the same problem or cognitive loop with little progress.
+
+Intervention modes
+
+The Scene Engine maps the estimated state to one of four micro-break families.
+
+ACTIVATE
+
+Used mainly when energy is low.
+
+Purpose:
+
+gently increase stimulation.
+
+Examples:
+
+short playful drawing
+
+tiny physical reset
+
+absurd rapid creative task
+
+DOWNSHIFT
+
+Used mainly when tension is high.
+
+Purpose:
+
+lower stimulation and reduce overload.
+
+Examples:
+
+slow-line drawing
+
+simple visual rhythm
+
+low-stimulation ambient break
+
+REFOCUS
+
+Used mainly when attention is scattered.
+
+Purpose:
+
+give attention one small constrained target.
+
+Examples:
+
+three-line drawing
+
+one-dot challenge
+
+short constrained visual task
+
+DETACH
+
+Used mainly when the user is stuck in the same loop.
+
+Purpose:
+
+switch cognitive context completely for a short period.
+
+Examples:
+
+absurd object drawing
+
+unrelated creative prompt
+
+playful visual interruption
+
+Adaptive loop
+
 User statement
       |
       v
 State Estimator
       |
-      |-- Energy: low / normal / high
-      |-- Tension: low / medium / high
-      |-- Attention: okay / scattered / stuck
+      |-- Energy
+      |-- Tension
+      |-- Attention
+      |-- Primary state
       v
 Scene Engine
       |
-      |-- DOWNSHIFT
       |-- ACTIVATE
+      |-- DOWNSHIFT
       |-- REFOCUS
       |-- DETACH
-      v
-Micro-break selector
-      |
       v
 20 sec / 1 min / 3 min intervention
       |
@@ -108,19 +179,19 @@ Better / Same / Worse
       |
       v
 Personalization update
-```
 
----
+The user gives one-tap outcome feedback after a break:
 
-## What makes it adaptive?
+Better
 
-The system does not only classify text.
+Same
 
-It keeps track of whether a selected break mode actually helped the user in a similar state.
+Worse
+
+The system stores this observed outcome and adjusts later intervention scores for similar states.
 
 Example:
 
-```text
 Context:
 low energy + stuck attention
 
@@ -130,128 +201,687 @@ ACTIVATE -> Better 1/3 times
 
 Next recommendation:
 DETACH receives a higher personalized score
-```
 
-The initial MVP uses expert/rule priors plus lightweight feedback-based personalization. A contextual bandit / Thompson-sampling style policy is planned after the feedback loop is stable.
+The current MVP begins with expert/rule priors plus lightweight reward-based personalization.
 
----
+A contextual-bandit / Thompson-sampling policy is a planned extension after enough real feedback exists.
 
-## AI architecture
+Why this problem?
 
-The production architecture is intentionally model-agnostic:
+Students often respond to cognitive fatigue by opening social media or switching to another feed. That produces a break, but not necessarily a useful recovery intervention.
 
-```text
-React frontend
-      |
-      v
-Server-side API / Supabase Edge Function
-      |
-      v
-LLM structured state extraction
-(Groq first; Gemini/OpenRouter can be swapped)
-      |
-      v
-Our Scene Engine
-      |
-      v
-Adaptive intervention policy
-```
+Recent work suggests that micro-breaks can support concentration, but also identifies important open questions around the type of break, personalization, and real-time adaptation.
 
-The LLM is **not** responsible for deciding the final break.
+A 2026 Frontiers in Psychology study on micro-breaks between study sessions reported a positive relationship between micro-breaks and learning concentration in university students. The authors also identified future directions including:
 
-It converts natural language into a constrained state representation. The intervention policy remains application logic that can be inspected, evaluated, and personalized.
+comparing different types of micro-breaks;
 
----
+studying cross-cultural differences;
 
-## Dataset
+developing AI-driven personalized micro-break systems based on real-time student states.
 
-We are building a small domain-specific dataset for state extraction:
+Reference:
 
-**Kya Scene Hai — Code-Mixed Cognitive State Dataset**
+H. Zhou, L. Fang, X. Song, W. Yin, J. Kang, Y. Huang, and J. Huang,
+"Do micro-breaks between study sessions enhance Chinese university students' learning concentration?"
+Frontiers in Psychology, vol. 17, 2026.
+DOI: 10.3389/fpsyg.2026.1714389
 
-Initial languages/styles:
+A second 2026 paper, "Smart Break Recommendation System Based on Student Mental Fatigue and Task Type," explores personalized break recommendation using task/fatigue detection and reinforcement-learning-based customization from passive behavioral signals such as keyboard and mouse activity.
 
-- English
-- Roman Urdu
-- Urdu-English code-mixed student language
+Reference:
+
+S. Vinesh, G. Rakshitha, V. Skandapriya, G. M. Bhoomika, and J. D. Hemalatha,
+"Smart Break Recommendation System Based on Student Mental Fatigue and Task Type,"
+2026 International Conference on Smart Futuristic Technology (ICSFT), 2026.
+DOI: 10.1109/ICSFT66733.2026.11507606
+
+Our research gap
+
+Kya Scene Hai? does not claim that adaptive breaks have never been studied.
+
+The project focuses on a narrower gap:
+
+Can a low-friction, text-first adaptive system use English, Roman Urdu, and Urdu-English code-mixed language to estimate a small non-clinical momentary cognitive state and choose a more suitable micro-break based on both the current state and previous outcomes?
+
+The MVP deliberately avoids:
+
+EEG
+
+wearables
+
+webcam emotion recognition
+
+continuous passive surveillance
+
+clinical diagnosis
+
+The interaction begins with a simple user-written statement.
+
+Dataset
+
+The project includes:
+
+Kya Scene Hai — Code-Mixed Cognitive State Dataset
+
+The working dataset contains:
+
+English
+
+Roman Urdu
+
+Urdu-English code-mixed student language
 
 Labels:
 
-- `energy`
-- `tension`
-- `attention`
-- `primary_state`
-- `language_style`
+energy
 
-The dataset is intended for:
+tension
 
-- benchmarking rule-based state extraction;
-- evaluating LLM structured classification;
-- training a lightweight multilingual baseline;
-- studying code-mixed student expressions around momentary cognitive fatigue and attention.
+attention
 
-It is **not** intended for diagnosis, psychiatric assessment, or crisis prediction.
+primary_state
 
-See `dataset/` for the dataset card, seed data, and generation/upload scripts.
+language_style
 
----
+Dataset construction:
 
-## Tech stack
+80 manually curated human seed examples
+             |
+             v
+3 controlled paraphrases per seed
+             |
+             v
+240 generated candidates
+             |
+             v
+automatic structured QA
+             |
+             v
+project-team manual review
+             |
+             v
+clean release dataset
 
-- React 19
-- TypeScript
-- Vite
-- React Router
-- Existing canvas-based micro-break interactions
-- Groq API for first structured state-extraction experiment
-- Supabase planned for anonymous users, feedback history, and server-side API-key protection
-- Hugging Face Datasets for the public dataset
-- Python + scikit-learn / sentence-transformers for baseline evaluation
+The original human seeds are balanced across:
 
----
+20 Drained
 
-## Current MVP status
+20 Overwhelmed
 
-### Implemented
-- interactive React frontend
-- timed micro-challenges
-- creative drawing canvas
-- ambient "world" experiences
-- local saving
-- safety diversion route
-- first mock Scene Engine
-- first feedback-personalization logic
+20 Distracted
 
-### Next
-1. finish the Home -> Scene -> Break -> Feedback flow;
-2. publish dataset v0.1;
-3. connect Groq structured output;
-4. compare rule baseline vs multilingual model vs LLM;
-5. move user feedback history to Supabase;
-6. add `My Scene` adaptation dashboard.
+20 Stuck
 
----
+Generated variants retain the original seed_id.
 
-## Safety and scope
+This allows leakage-safe train/validation/test splitting by seed group.
 
-Kya Scene Hai? is a **non-clinical study/work micro-break system**.
+See:
+
+dataset/README.md
+dataset/LABEL_GUIDE.md
+dataset/WORKFLOW.md
+
+for dataset-specific documentation.
+
+Initial ML benchmark
+
+We evaluated three state-estimation approaches.
+
+Split design
+
+After exact normalized duplicate removal:
+
+total rows: 314
+
+unique seed groups: 80
+
+train rows: 220
+
+validation rows: 47
+
+test rows: 47
+
+Splits are grouped by seed_id.
+
+Paraphrases of the same original statement never cross train/validation/test boundaries.
+
+Primary-state classification
+
+Model
+
+Accuracy
+
+Macro-F1
+
+TF-IDF + Logistic Regression
+
+0.8511
+
+0.8464
+
+Rule-based baseline
+
+0.6596
+
+0.6263
+
+multilingual-E5 + Logistic Regression
+
+0.5957
+
+0.5774
+
+The lightweight TF-IDF classifier currently performs best on this dataset.
+
+All structured targets
+
+Model
+
+Target
+
+Accuracy
+
+Macro-F1
+
+Rules
+
+Energy
+
+0.7660
+
+0.5008
+
+Rules
+
+Tension
+
+0.5957
+
+0.5067
+
+Rules
+
+Attention
+
+0.4894
+
+0.4975
+
+Rules
+
+Primary state
+
+0.6596
+
+0.6263
+
+TF-IDF + LR
+
+Energy
+
+0.8936
+
+0.6134
+
+TF-IDF + LR
+
+Tension
+
+0.7021
+
+0.7007
+
+TF-IDF + LR
+
+Attention
+
+0.8511
+
+0.8377
+
+TF-IDF + LR
+
+Primary state
+
+0.8511
+
+0.8464
+
+multilingual-E5 + LR
+
+Energy
+
+0.5745
+
+0.5229
+
+multilingual-E5 + LR
+
+Tension
+
+0.6383
+
+0.6400
+
+multilingual-E5 + LR
+
+Attention
+
+0.7021
+
+0.7049
+
+multilingual-E5 + LR
+
+Primary state
+
+0.5957
+
+0.5774
+
+Macro-F1 is treated as the main metric because some component labels are not perfectly balanced.
+
+Primary-state performance by language style
+
+TF-IDF + Logistic Regression
+
+Language style
+
+Accuracy
+
+Macro-F1
+
+Code-mixed
+
+0.9375
+
+0.9365
+
+Roman Urdu
+
+0.8667
+
+0.8532
+
+English
+
+0.7500
+
+0.7183
+
+multilingual-E5 + Logistic Regression
+
+Language style
+
+Accuracy
+
+Macro-F1
+
+English
+
+0.8125
+
+0.8032
+
+Code-mixed
+
+0.5000
+
+0.4675
+
+Roman Urdu
+
+0.4667
+
+0.3745
+
+Rule baseline
+
+Language style
+
+Accuracy
+
+Macro-F1
+
+Code-mixed
+
+0.7500
+
+0.7143
+
+Roman Urdu
+
+0.6667
+
+0.6181
+
+English
+
+0.5625
+
+0.5137
+
+An interesting early finding is that word/character n-gram features perform particularly well on the current Roman Urdu and code-mixed subsets.
+
+These are MVP results on a small dataset and should not be interpreted as evidence of clinical validity or broad population generalization.
+
+The generated examples are undergoing a final project-team review. The benchmark will be rerun if that review materially changes the released dataset.
+
+Kaggle experiment
+
+Training and evaluation were run through a reproducible Kaggle pipeline.
+
+The completed Kaggle environment exposed:
+
+2 × Tesla T4
+
+The benchmark pipeline automatically produced:
+
+exact dataset splits
+
+trained Logistic Regression models
+
+E5 embeddings
+
+confusion matrices
+
+per-target metrics
+
+language-wise metrics
+
+misclassified examples
+
+experiment summary
+
+local copies of all Kaggle artifacts
+
+The current experiment is intentionally lightweight.
+
+We are not fine-tuning a large language model for the MVP.
+
+AI architecture
+
+The deployed application uses a model-agnostic server-side state extraction layer.
+
+Current production candidate:
+
+Gemini 3.5 Flash-Lite
+
+because the task is short structured classification and the model is optimized for low-latency, high-throughput execution.
+
+Architecture:
+
+React / Vite frontend
+        |
+        v
+Supabase Edge Function
+        |
+        v
+Gemini structured state extraction
+        |
+        v
+Scene Engine
+        |
+        v
+Adaptive intervention policy
+        |
+        v
+Better / Same / Worse feedback
+
+The Gemini API key stays server-side and is never exposed through a VITE_* environment variable.
+
+Free-tier deployment architecture
+
+The MVP is designed to avoid paid infrastructure.
+
+GitHub
+   |
+   v
+Vercel Hobby
+React / Vite frontend
+   |
+   v
+Supabase Free
+Edge Functions + database + anonymous user history
+   |
+   v
+Gemini API
+structured state extraction
+
+Research assets:
+
+Hugging Face -> public dataset
+Kaggle       -> training/evaluation experiments
+
+No paid always-on GPU server is required.
+
+Tech stack
+
+Frontend
+
+React 19
+
+TypeScript
+
+Vite
+
+React Router
+
+Backend
+
+Supabase
+
+Supabase Edge Functions
+
+Supabase Postgres
+
+anonymous/pseudonymous user history
+
+AI
+
+Gemini 3.5 Flash-Lite for structured production state extraction
+
+Groq used during dataset generation/review experiments
+
+deterministic Scene Engine for final intervention selection
+
+ML / research
+
+Python
+
+pandas
+
+scikit-learn
+
+sentence-transformers
+
+multilingual-E5-small
+
+TF-IDF word + character n-grams
+
+Logistic Regression
+
+Kaggle
+
+Dataset hosting
+
+Hugging Face Datasets
+
+Repository structure
+
+Target structure:
+
+adaptive-breaks/
+├── src/
+│   ├── engine/
+│   │   ├── sceneEngine.ts
+│   │   └── personalization.ts
+│   ├── services/
+│   │   └── sceneApi.ts
+│   ├── routes.tsx
+│   └── index.css
+│
+├── supabase/
+│   └── functions/
+│       └── analyze-scene/
+│           └── index.ts
+│
+├── dataset/
+│   ├── README.md
+│   ├── LABEL_GUIDE.md
+│   ├── WORKFLOW.md
+│   ├── data/
+│   └── scripts/
+│
+├── kaggle/
+│   └── train_and_compare.py
+│
+├── scripts/
+│   ├── publish_dataset_to_kaggle.ps1
+│   └── run_kaggle_and_download.ps1
+│
+└── README.md
+
+Current status
+
+Completed
+
+React micro-break prototype
+
+creative/timed intervention library
+
+mock Scene Engine
+
+intervention-mode mapping
+
+Better / Same / Worse feedback logic
+
+local personalization logic
+
+safety diversion route
+
+80 manually curated seed examples
+
+240 generated paraphrase candidates
+
+structured QA pass
+
+leakage-safe dataset pipeline
+
+Kaggle training pipeline
+
+Rules benchmark
+
+TF-IDF + Logistic Regression benchmark
+
+multilingual-E5 + Logistic Regression benchmark
+
+TF-IDF primary-state Macro-F1: 0.8464
+
+In progress
+
+final project-team dataset review
+
+real Gemini state extraction
+
+Supabase persistence
+
+Next
+
+connect Gemini through a Supabase Edge Function;
+
+replace mock state extraction with the real API;
+
+connect Scene Result -> intervention -> feedback end to end;
+
+store anonymous outcome history in Supabase;
+
+add My Scene adaptation dashboard if time allows;
+
+publish the reviewed dataset to Hugging Face;
+
+deploy frontend to Vercel.
+
+Safety and scope
+
+Kya Scene Hai? is a non-clinical study/work micro-break system.
 
 It does not:
 
-- diagnose mental illness;
-- replace therapy;
-- provide psychiatric treatment;
-- infer clinical conditions from normal study stress;
-- route high-risk messages into playful break recommendations.
+diagnose mental illness;
 
-High-risk distress is handled outside the normal adaptive-break loop and directed toward human/professional support.
+replace therapy;
 
----
+provide psychiatric treatment;
 
-## Research question
+infer clinical conditions from ordinary study stress;
 
-> **Can a lightweight adaptive system use a student's momentary state and past feedback to select a more suitable micro-break than a one-size-fits-all break recommendation?**
+claim validated psychological profiling;
 
-A secondary project question is:
+route high-risk distress into playful micro-break recommendations.
 
-> **Can English, Roman Urdu, and Urdu-English code-mixed student language be reliably mapped to a small non-clinical cognitive-state representation for adaptive break selection?**
+High-risk language is handled outside the four normal intervention modes and routed toward appropriate human/professional support.
+
+Research questions
+
+Primary
+
+Can a lightweight adaptive system use a user's current momentary state and previous break outcomes to choose a more suitable micro-break than a one-size-fits-all recommendation?
+
+State estimation
+
+Can English, Roman Urdu, and Urdu-English code-mixed student language be reliably mapped to a small non-clinical cognitive-state representation?
+
+Personalization
+
+Can explicit Better / Same / Worse feedback provide enough signal for a lightweight personalization policy to improve intervention selection over repeated use?
+
+Limitations
+
+The current project has several important limitations:
+
+the dataset is small;
+
+generated paraphrases are part of the working dataset;
+
+the current evaluation set is small;
+
+language-style results therefore have wide uncertainty;
+
+real-world intervention effectiveness has not yet been established;
+
+the feedback policy has not yet been evaluated longitudinally;
+
+the project is not clinically validated;
+
+the initial user population is primarily students/knowledge workers.
+
+Reproducibility
+
+The repository includes:
+
+dataset/
+kaggle/train_and_compare.py
+scripts/publish_dataset_to_kaggle.ps1
+scripts/run_kaggle_and_download.ps1
+
+The Kaggle experiment produces:
+
+metrics_summary.csv
+primary_state_ranking.csv
+language_breakdown.csv
+experiment_summary.md
+confusion matrices
+misclassified examples
+trained .joblib classifiers
+train / validation / test splits
+
+No benchmark result should be changed in this README unless it comes from an actual recorded experiment.
+
+License
+
+Application code licensing can be defined separately from the dataset license.
+
+The dataset card currently uses CC BY 4.0 for the planned public dataset release.

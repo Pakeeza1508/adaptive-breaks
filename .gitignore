@@ -76,3 +76,13 @@ Thumbs.db
 *.temp
 *.bak
 *.swp
+
+# Kaggle local/auth/runtime artifacts
+.kaggle_staging/
+artifacts/
+kaggle/kernel-metadata.json
+kaggle.json
+.kaggle/GITIGNORE_ADDITIONS.txt
+dataset/data/auto_review_checkpoint.jsonl
+dataset/data/auto_review_failures.jsonl
+apply_step2_frontend.py
