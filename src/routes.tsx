@@ -871,7 +871,7 @@ function Home() {
               <div className="scene-orbit orbit-a" />
               <div className="scene-orbit orbit-b" />
               <img
-                src="/public/assets/mascots/kya-scene-drained.png"
+                src="/assets/mascots/kya-scene-drained.png"
                 alt="Drained Kya Scene Hai mascot"
                 className="scene-mascot-img"
               />
@@ -888,7 +888,7 @@ function Home() {
               <div className="scene-orbit orbit-a" />
               <div className="scene-orbit orbit-b" />
               <img
-                src="/public/assets/mascots/kya-scene-overwhelmed.png"
+                src="/assets/mascots/kya-scene-overwhelmed.png"
                 alt="Overwhelmed Kya Scene Hai mascot"
                 className="scene-mascot-img"
               />
@@ -905,7 +905,7 @@ function Home() {
               <div className="scene-orbit orbit-a" />
               <div className="scene-orbit orbit-b" />
               <img
-                src="/public/assets/mascots/kya-scene-distracted.png"
+                src="/assets/mascots/kya-scene-distracted.png"
                 alt="Distracted Kya Scene Hai mascot"
                 className="scene-mascot-img"
               />
@@ -922,7 +922,7 @@ function Home() {
               <div className="scene-orbit orbit-a" />
               <div className="scene-orbit orbit-b" />
               <img
-                src="/public/assets/mascots/kya-scene-stuck.png"
+                src="/assets/mascots/kya-scene-stuck.png"
                 alt="Stuck Kya Scene Hai mascot"
                 className="scene-mascot-img"
               />
@@ -2968,3 +2968,4 @@ export const router = createBrowserRouter([
   { path: "/worlds", Component: Worlds },
   { path: "/world/:id", Component: WorldExperience },
 ]);
+
