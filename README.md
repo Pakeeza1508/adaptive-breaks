@@ -769,7 +769,39 @@ The Kaggle experiment produces:
 - trained `.joblib` classifiers
 - train / validation / test splits
 
-No benchmark result should be changed in this README unless it comes from an actual recorded experiment.
+## Evidence & Resources
+
+### Live Product
+- Vercel Deployment: [<YOUR_DEPLOYED_APP_URL>](https://adaptive-breaks.vercel.app/)
+
+### Source Code
+- GitHub Repository:
+  https://github.com/Pakeeza1508/adaptive-breaks
+
+### Dataset
+- Kaggle — Kya Scene Hai? Code-Mixed Cognitive State Dataset:
+  https://www.kaggle.com/datasets/pakeezakhalid/kya-scene-hai-reviewed-data
+
+### Benchmark Notebook
+- Kaggle — Kya Scene Hai? Benchmark:
+  https://www.kaggle.com/code/pakeezakhalid/kya-scene-hai-benchmark
+
+### User Research
+- Kya Scene Hai? — Study & Work Break Habits Survey:
+  https://docs.google.com/forms/d/14v3labeugBEhl7BOHo9JTfwGCH_5NairrVPODbHw4WI/viewform
+
+The survey is used for early product validation and to collect anonymous,
+non-sensitive examples of how users naturally describe feeling drained,
+overwhelmed, distracted, or stuck during study or work.
+
+### Research Basis
+- Zhou et al. (2026) — “Do micro-breaks between study sessions enhance Chinese university students’ learning concentration?”
+  Frontiers in Psychology.
+  DOI: 10.3389/fpsyg.2026.1714389
+
+- Vinesh et al. (2026) — “Smart Break Recommendation System Based on Student Mental Fatigue and Task Type”
+  International Conference on Smart Futuristic Technology (ICSFT).
+  DOI: 10.1109/ICSFT66733.2026.11507606
 
 ## License
 
