@@ -289,10 +289,10 @@ Dataset construction:
 automatic structured QA
              |
              v
-project-team manual review
+final project-team manual review (pending)
              |
              v
-clean release dataset
+clean public release dataset
 ```
 
 The original human seeds are balanced across:
@@ -407,11 +407,11 @@ We are not fine-tuning a large language model for the MVP.
 
 ## AI architecture
 
-The deployed application uses a model-agnostic server-side state extraction layer.
+The application uses a model-agnostic server-side state extraction layer.
 
-Current production candidate:
+Current MVP implementation:
 
-Gemini 3.5 Flash-Lite is currently used through a Supabase Edge Function for structured state extraction.
+Gemini 3.5 Flash-Lite is used through a Supabase Edge Function for structured state extraction.
 
 ### Architecture
 
@@ -461,8 +461,8 @@ structured state extraction
 
 ### Research assets
 
-- Hugging Face -> public dataset
-- Kaggle       -> training/evaluation experiments
+- Kaggle -> current reviewed dataset and training/evaluation experiments
+- Hugging Face -> planned final public dataset release after project-team review
 
 No paid always-on GPU server is required.
 
@@ -582,11 +582,12 @@ A dedicated `/business` page in the application presents this model in a judge- 
 
 ### Dataset hosting
 
-- Hugging Face Datasets
+- Kaggle: current reviewed dataset and benchmark artifacts
+- Hugging Face Datasets: planned final public release after project-team review
 
 ## Repository structure
 
-### Target structure
+### Current structure
 
 ```text
 adaptive-breaks/
@@ -612,9 +613,18 @@ adaptive-breaks/
 │   │       └── index.ts
 │   │
 │   ├── migrations/
-│   │   └── 20260912170000_create_break_feedback.sql
+│   │   ├── 20260912170000_create_break_feedback.sql
+│   │   └── 20260912183000_create_scene_corrections.sql
 │   │
 │   └── config.toml
+│
+├── public/
+│   └── assets/
+│       └── mascots/
+│           ├── kya-scene-drained.png
+│           ├── kya-scene-overwhelmed.png
+│           ├── kya-scene-distracted.png
+│           └── kya-scene-stuck.png
 │
 ├── dataset/
 │   ├── README.md
@@ -660,12 +670,20 @@ adaptive-breaks/
 - English, Roman Urdu, and code-mixed input support
 - high-risk language safety diversion
 - user correction controls on detected state
+- persistent scene-correction logging
 - Better / Same / Worse feedback flow
 - local personalization fallback
 - Supabase Postgres feedback persistence
 - pseudonymous browser-level user IDs
 - previous outcome history loaded for future recommendations
 - mode-level reward-based personalization
+- challenge/activity-level personalization
+- lightweight “Personalized from X previous resets” trace
+- collapsible “Why this?” adaptation explanation
+- refreshed product landing page
+- state-specific mascot visual section
+- dedicated business-model page
+- Vercel SPA routing configuration
 - 80 manually curated seed examples
 - 240 generated paraphrase candidates
 - automated structured dataset review
@@ -680,18 +698,14 @@ adaptive-breaks/
 ### In progress
 
 - final project-team dataset review
-- UI/demo polish
-- clearer adaptation visualization for the final demo
-- review of confidence/correction UX
+- final responsive/UI/demo polish
+- production deployment and smoke testing, if not already completed
 
 ### Next
 
-- improve demo visibility of personalization
-- optionally persist user state corrections
-- optionally extend personalization from mode-level to individual break/activity preference
-- deploy the frontend to Vercel
 - publish the final reviewed dataset to Hugging Face
-- prepare final presentation and demo video
+- prepare the final presentation and demo video
+- post-hackathon production hardening such as anonymous Auth, rate limiting, and monitoring
 
 ## Safety and scope
 

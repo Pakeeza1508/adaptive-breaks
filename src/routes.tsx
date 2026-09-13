@@ -336,6 +336,8 @@ const challengeModes: Record<
   "NON-DOMINANT HERO": ["activate"],
 };
 
+const EMPTY_CHALLENGE_BONUSES: Record<string, number> = {};
+
 function pickAdaptiveChallenge(
   mode: BreakMode,
   availableTime: number,
@@ -1251,7 +1253,8 @@ function SceneResult() {
     localPersonalization;
 
   const challengeBonuses =
-    remotePersonalization?.challengeBonuses ?? {};
+    remotePersonalization?.challengeBonuses ??
+    EMPTY_CHALLENGE_BONUSES;
 
   const observations =
     remotePersonalization?.observations ?? 0;
@@ -2698,26 +2701,61 @@ function About() {
   return (
     <main className="page about">
       <Nav />
+
       <section>
-        <p className="eyebrow">WHY THIS EXISTS</p>
-        <h1>What if your break wasn't another feed?</h1>
-        <p>
-          We often open social media not because we care what's happening, but
-          because our brain wants a tiny break.
+        <p className="eyebrow">
+          WHY KYA SCENE HAI?
         </p>
+
+        <h1>
+          Not every tired brain
+          <br />
+          needs the same break.
+        </h1>
+
         <p>
-          A two-minute break becomes thirty minutes of passive consumption. This
-          is another possibility: <b>make something tiny instead.</b>
+          Sometimes you're drained. Sometimes you're
+          overloaded. Sometimes your attention is
+          everywhere. And sometimes you're stuck on the
+          same problem for far too long.
         </p>
+
+        <p>
+          Kya Scene Hai? lets you describe that moment
+          naturally, estimates a small non-clinical state
+          from energy, tension, and attention, then lets
+          our own Scene Engine choose the type of reset.
+        </p>
+
         <div className="manifesto">
-          <span>No audience.</span>
-          <span>No algorithm.</span>
-          <span>No performance.</span>
-          <span>No pressure.</span>
+          <span>DRAINED → ACTIVATE</span>
+          <span>OVERWHELMED → DOWNSHIFT</span>
+          <span>DISTRACTED → REFOCUS</span>
+          <span>STUCK → DETACH</span>
         </div>
-        <h2>Create, don't consume.</h2>
-        <Link to="/vibes" className="primary link-button">
-          MAKE SOMETHING →
+
+        <h2>
+          A break should know why you need one.
+        </h2>
+
+        <p>
+          After each reset, Better / Same / Worse becomes
+          a small learning signal. Over time, previous
+          outcomes can influence both the type of reset
+          and the activity selected for you.
+        </p>
+
+        <p>
+          No diagnosis. No webcam. No wearables. No
+          continuous surveillance. Just a short check-in,
+          a tiny reset, and explicit feedback.
+        </p>
+
+        <Link
+          to="/"
+          className="primary link-button"
+        >
+          READ MY SCENE →
         </Link>
       </section>
     </main>
